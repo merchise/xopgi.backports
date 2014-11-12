@@ -27,10 +27,11 @@
     "website": "http://www.merchise.org/addons/xopgi_backports",
     "category": "Hidden",
     "description": "General fixes.",
-    "depends": ['base', ],
+    "depends": ['base', 'crm'],
     "init_xml": [],
     "update_xml": [
         'view/config.xml',
+        'view/base_partner_merge_view.xml',
     ],
     "demo_xml": [],
     "css": [],
