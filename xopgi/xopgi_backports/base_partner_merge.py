@@ -482,15 +482,15 @@ class MergePartnerAutomatic(osv.TransientModel):
             groups.append('name')
 
         if not groups:
-            raise osv.except_osv(_('Error'),
-                                 _("You have to specify a filter for your selection"))
+            raise osv.except_osv(
+                _('Error'),
+                _("You have to specify a filter for your selection")
+            )
 
         return groups
 
     def next_cb(self, cr, uid, ids, context=None):
-        """
-        Don't compute any thing
-        """
+        """Don't compute any thing."""
         context = dict(context or {}, active_test=False)
         this = self.browse(cr, uid, ids[0], context=context)
         if this.current_line_id:
@@ -610,10 +610,11 @@ class MergePartnerAutomatic(osv.TransientModel):
         _logger.info("counter: %s", counter)
 
     def start_process_cb(self, cr, uid, ids, context=None):
-        """
-        Start the process.
+        """Start the process.
+
         * Compute the selected groups (with duplication)
         * If the user has selected the 'exclude_XXX' fields, avoid the partners.
+
         """
         assert is_integer_list(ids)
 
