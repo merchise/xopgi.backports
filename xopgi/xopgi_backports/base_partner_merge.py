@@ -134,7 +134,9 @@ class MergePartnerAutomatic(osv.TransientModel):
         return res
 
     _defaults = {
-        'state': 'option'
+        'state': 'option',
+        'group_by_name': True,
+        'group_by_email': True,
     }
 
     def get_fk_on(self, cr, table):
