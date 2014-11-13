@@ -1,5 +1,13 @@
 #!/usr/bin/env python
-from __future__ import absolute_import
+# -*- encoding: utf-8 -*-
+
+
+from __future__ import (absolute_import as _py3_abs_imports,
+                        division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
+
+
 from email.utils import parseaddr
 import functools
 import htmlentitydefs
@@ -59,15 +67,16 @@ def is_integer_list(ids):
 
 
 class ResPartner(osv.Model):
-    _inherit = 'res.partner'
+    _inherit = str('res.partner')
 
     _columns = {
         'id': fields.integer('Id', readonly=True),
         'create_date': fields.datetime('Create Date', readonly=True),
     }
 
+
 class MergePartnerLine(osv.TransientModel):
-    _name = 'base.partner.merge.line'
+    _name = str('base.partner.merge.line')
 
     _columns = {
         'wizard_id': fields.many2one('base.partner.merge.automatic.wizard',
@@ -85,7 +94,7 @@ class MergePartnerAutomatic(osv.TransientModel):
         merge. We use two objects, the first one is the wizard for the end-user.
         And the second will contain the partner list to merge.
     """
-    _name = 'base.partner.merge.automatic.wizard'
+    _name = str('base.partner.merge.automatic.wizard')
 
     _columns = {
         # Group by
