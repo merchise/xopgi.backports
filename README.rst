@@ -3,3 +3,5 @@
 ======================================================================
 
 .. Place an item for each feature backported.
+
+- Partner merger with fuzzy match and name filtering.
