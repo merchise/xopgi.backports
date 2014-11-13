@@ -98,6 +98,7 @@ class MergePartnerAutomatic(osv.TransientModel):
 
     _columns = {
         # Group by
+        'filter_by_name': fields.char('Name', required=False),
         'group_by_email': fields.boolean('Email'),
         'group_by_name': fields.boolean('Name'),
         'group_by_is_company': fields.boolean('Is Company'),
@@ -395,7 +396,7 @@ class MergePartnerAutomatic(osv.TransientModel):
     def close_cb(self, cr, uid, ids, context=None):
         return {'type': 'ir.actions.act_window_close'}
 
-    def _generate_query(self, fields, maximum_group=100):
+    def _generate_query(self, fields, name=None, maximum_group=100):
         criteria = []
         if 'vat' in fields:
             criteria.append("""
@@ -443,6 +444,9 @@ class MergePartnerAutomatic(osv.TransientModel):
         if 'is_company' in fields:
             criteria.append('a.is_company AND b.is_company')
 
+        if name:
+            criteria.append("a.name ILIKE '%{name}%'".format(name=name))
+
         criteria = ' AND '.join(criteria)
 
         query = '''SELECT a.id, array_agg(b.id)
@@ -471,6 +475,9 @@ class MergePartnerAutomatic(osv.TransientModel):
             for field in fields
             if getattr(this, '%s%s' % (group_by_str, field), False)
         ]
+
+        if this.filter_by_name and 'name' not in groups:
+            groups.append('name')
 
         if not groups:
             raise osv.except_osv(_('Error'),
@@ -611,7 +618,11 @@ class MergePartnerAutomatic(osv.TransientModel):
         context = dict(context or {}, active_test=False)
         this = self.browse(cr, uid, ids[0], context=context)
         groups = self._compute_selected_groupby(this)
-        query = self._generate_query(groups, this.maximum_group)
+        query = self._generate_query(
+            groups,
+            name=this.filter_by_name,
+            maximum_group=this.maximum_group,
+        )
         self._process_query(cr, uid, ids, query, context=context)
 
         return self._next_screen(cr, uid, this, context)
