@@ -72,6 +72,10 @@
                             <field name="state" invisible="1" />
                             <field name="number_group"/>
                         </group>
+                        <group string="Filter by"
+                            attrs="{'invisible': [('state', 'not in', ('option',))]}">
+                            <field name='filter_by_name' />
+                        </group>
                         <group string="Search duplicates based on duplicated data in"
                             attrs="{'invisible': [('state', 'not in', ('option',))]}">
                             <field name='group_by_email' />
