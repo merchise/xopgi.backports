@@ -13,28 +13,24 @@
 
 
 {
-    "name": "ERP backports (xopgi)",
-
-    # Since backports are only needed till OpenERP itself backports the
-    # feature, the best strategy for versioning is using the latest date
-    # **all** the ports are known to be missed.
-
-    # Warning:  This addon should only contain res_config items.
+    "name": "ERP backports, Partner Merge",
 
     "version": "2014.11.12",
 
     "author": "Merchise Autrement",
-    "website": "http://www.merchise.org/addons/xopgi_backports",
+    "website": "http://www.merchise.org/addons/xopgi_backports/partner_merge",
     "category": "Hidden",
     "description": "General fixes.",
-    "depends": ['base', ],
-    "init_xml": [],
+    "depends": ['base', 'crm'],
+    "init_xml": [
+        'init/metaphone.xml',
+    ],
     "update_xml": [
-        'view/config.xml',
+        'view/base_partner_merge_view.xml',
     ],
     "demo_xml": [],
     "css": [],
     "application": False,
     "installable": True,
-    'auto_install': True,
+    'auto_install': False,
 }

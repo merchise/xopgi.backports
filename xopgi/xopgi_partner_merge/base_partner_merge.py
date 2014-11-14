@@ -4,8 +4,7 @@
 
 from __future__ import (absolute_import as _py3_abs_imports,
                         division as _py3_division,
-                        print_function as _py3_print,
-                        unicode_literals as _py3_unicode)
+                        print_function as _py3_print)
 
 
 from email.utils import parseaddr
@@ -64,6 +63,19 @@ def sanitize_email(email):
 
 def is_integer_list(ids):
     return all(isinstance(i, (int, long)) for i in ids)
+
+
+class PartnerMergeInit(osv.TransientModel):
+    _name = str('base.partner.merge.initialize')
+
+    def install_fuzzy_extension(self, cr, uid, context=None):
+        try:
+            cr.execute('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;')
+        except:
+            raise osv.Error(_('DB Server Error'),
+                            _('A required DB extension was not found. '
+                              'Ask your administrator to install '
+                              '"postgresql-contrib" package.'))
 
 
 class ResPartner(osv.Model):

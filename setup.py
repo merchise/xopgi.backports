@@ -53,5 +53,6 @@ setup(name=project_name,
       entry_points="""
       [xoeuf.addons]
       xopgi_backports = xopgi.xopgi_backports
+
       """,
       )
