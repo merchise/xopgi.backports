@@ -25,7 +25,10 @@ try:
     ServerError = DNS.ServerError
 except:
     DNS = None
-    class ServerError(Exception): pass
+
+    class ServerError(Exception):
+        pass
+
 # All we are really doing is comparing the input string to one
 # gigantic regular expression.  But building that regexp, and
 # ensuring its correctness, is made much easier by assembling it
