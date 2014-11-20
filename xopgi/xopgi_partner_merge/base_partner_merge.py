@@ -323,9 +323,24 @@ class MergePartnerAutomatic(osv.TransientModel):
         if len(partner_ids) < 2:
             return
 
+        is_superuser = uid == openerp.SUPERUSER_ID
 
-        if openerp.SUPERUSER_ID != uid and len(set(partner.email for partner in proxy.browse(cr, uid, partner_ids, context=context))) > 1:
-            raise osv.except_osv(_('Error'), _("All contacts must have the same email. Only the Administrator can merge contacts with different emails."))
+        if not is_superuser:
+            if len(partner_ids) > 3:
+                raise osv.except_osv(
+                    _('Error'),
+                    _("For safety reasons, you cannot merge more than 3 "
+                      "contacts together. You can re-open the wizard several "
+                      "times if needed.")
+                )
+
+            partners = proxy.browse(cr, uid, partner_ids, context=context)
+            if len(set(p.email for p in partners)) > 1:
+                raise osv.except_osv(
+                    _('Error'),
+                    _("All contacts must have the same email. Only the "
+                      "Administrator can merge contacts with different emails.")
+                )
 
         if dst_partner and dst_partner.id in partner_ids:
             src_partners = proxy.browse(cr, uid, [id for id in partner_ids if id != dst_partner.id], context=context)
