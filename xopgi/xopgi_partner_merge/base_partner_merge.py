@@ -350,9 +350,22 @@ class MergePartnerAutomatic(osv.TransientModel):
             src_partners = ordered_partners[:-1]
         _logger.info("dst_partner: %s", dst_partner.id)
 
-        if openerp.SUPERUSER_ID != uid and self._model_is_installed(cr, uid, 'account.move.line', context=context) and \
-                self.pool.get('account.move.line').search(cr, openerp.SUPERUSER_ID, [('partner_id', 'in', [partner.id for partner in src_partners])], context=context):
-            raise osv.except_osv(_('Error'), _("Only the destination contact may be linked to existing Journal Items. Please ask the Administrator if you need to merge several contacts linked to existing Journal Items."))
+        src_parters_has_account_move_lines = (
+            not is_superuser and
+            self._model_is_installed(
+                cr, uid, 'account.move.line', context=context) and
+            self.pool.get('account.move.line').search(
+                cr, openerp.SUPERUSER_ID,
+                [('partner_id', 'in', [p.id for p in src_partners])],
+                context=context)
+        )
+        if src_parters_has_account_move_lines:
+            raise osv.except_osv(
+                _('Error'),
+                _("Only the destination contact may be linked to existing "
+                  "Journal Items. Please ask the Administrator if you need to "
+                  "merge several contacts linked to existing Journal Items.")
+            )
 
         call_it = lambda function: function(cr, uid, src_partners, dst_partner,
                                             context=context)
