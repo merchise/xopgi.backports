@@ -329,6 +329,11 @@ class MergePartner(osv.TransientModel):
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
     def _merge(self, cr, uid, partner_ids, dst_partner=None, context=None):
+        """Merge seveal partners into just one.
+
+        :param partner_ids: Partners to merge.
+        :param dst_partner: Destination partner.
+        """
         proxy = self.pool.get('res.partner')
 
         partner_ids = proxy.exists(cr, uid, list(partner_ids), context=context)
