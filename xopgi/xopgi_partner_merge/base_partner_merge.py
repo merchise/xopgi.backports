@@ -110,7 +110,7 @@ class MergePartnerLine(osv.TransientModel):
         return {id: partners_names[groups[id]] for id in ids}
 
 
-class MergePartner(osv.TransientModel):
+class MergePartnerWizard(osv.TransientModel):
     """This wizard find potential partners to merge.
 
     It uses to objects, the first is wizard it self for the end-user, and the
