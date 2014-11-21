@@ -622,22 +622,24 @@ class MergePartnerWizard(osv.TransientModel):
                     groups.append(found_ids)
 
         for group in groups:
-            values = {
-                'wizard_id': this.id,
-                'min_id': min(group),
-                'aggr_ids': sorted(group),
-            }
-            proxy.create(cr, uid, values, context=context)
-
-        counter = len(groups)
-
-        values = {
-            'number_group': counter,
-        }
-
-        this.write(values)
-
-        _logger.info("counter: %s", counter)
+            group_id = proxy.create(
+                cr, uid,
+                {
+                    'wizard_id': this.id,
+                    'partner_id': min(group),
+                },
+                context=context
+            )
+            for partner_id in group:
+                proxy.create(
+                    cr, uid,
+                    {
+                        'wizard_id': this.id,
+                        'parent_id': group_id,
+                        'partner_id': min(group),
+                    },
+                    context=context
+                )
 
     def start_process_cb(self, cr, uid, ids, context=None):
         """Start the process.
