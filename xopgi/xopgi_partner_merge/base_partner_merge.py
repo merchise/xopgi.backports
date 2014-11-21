@@ -69,11 +69,13 @@ class MergePartnerLine(osv.TransientModel):
 
 
 class MergePartnerAutomatic(osv.TransientModel):
+    """This wizard find potential partners to merge.
+
+    It uses to objects, the first is wizard it self for the end-user, and the
+    second will contain the partner list to merge.
+
     """
-        The idea behind this wizard is to create a list of potential partners to
-        merge. We use two objects, the first one is the wizard for the end-user.
-        And the second will contain the partner list to merge.
-    """
+
     _name = str('base.partner.merge.automatic.wizard')
 
     _columns = {
@@ -91,26 +93,39 @@ class MergePartnerAutomatic(osv.TransientModel):
                                   'State',
                                   readonly=True,
                                   required=True),
-        'number_group': fields.integer("Group of Contacts", readonly=True),
-        'current_line_id': fields.many2one('base.partner.merge.line', 'Current Line'),
-        'line_ids': fields.one2many('base.partner.merge.line', 'wizard_id', 'Lines'),
-        'partner_ids': fields.many2many('res.partner', string='Contacts'),
-        'dst_partner_id': fields.many2one('res.partner', string='Destination Contact'),
+        'number_group':
+            fields.integer("Group of Contacts", readonly=True),
+        'current_line_id':
+            fields.many2one('base.partner.merge.line', 'Current Line'),
+        'line_ids':
+            fields.one2many('base.partner.merge.line', 'wizard_id', 'Lines'),
+        'partner_ids':
+            fields.many2many('res.partner', string='Contacts'),
+        'dst_partner_id':
+            fields.many2one('res.partner', string='Destination Contact'),
 
-        'exclude_contact': fields.boolean('A user associated to the contact'),
-        'exclude_journal_item': fields.boolean('Journal Items associated to the contact'),
-        'maximum_group': fields.integer("Maximum of Group of Contacts"),
+        'exclude_contact':
+            fields.boolean('A user associated to the contact'),
+        'exclude_journal_item':
+            fields.boolean('Journal Items associated to the contact'),
+        'maximum_group':
+            fields.integer("Maximum of Group of Contacts"),
     }
 
     def default_get(self, cr, uid, fields, context=None):
         if context is None:
             context = {}
-        res = super(MergePartnerAutomatic, self).default_get(cr, uid, fields, context)
-        if context.get('active_model') == 'res.partner' and context.get('active_ids'):
+        res = super(MergePartnerAutomatic, self).default_get(
+            cr, uid, fields, context
+        )
+        if (context.get('active_model') == 'res.partner'
+                and context.get('active_ids')):
             partner_ids = context['active_ids']
             res['state'] = 'selection'
             res['partner_ids'] = partner_ids
-            res['dst_partner_id'] = self._get_ordered_partner(cr, uid, partner_ids, context=context)[-1].id
+            res['dst_partner_id'] = self._get_ordered_partner(
+                cr, uid, partner_ids, context=context
+            )[-1].id
         return res
 
     _defaults = {
@@ -138,8 +153,13 @@ class MergePartnerAutomatic(osv.TransientModel):
         """
         return cr.execute(q, (table,))
 
-    def _update_foreign_keys(self, cr, uid, src_partners, dst_partner, context=None):
-        _logger.debug('_update_foreign_keys for dst_partner: %s for src_partners: %r', dst_partner.id, list(map(operator.attrgetter('id'), src_partners)))
+    def _update_foreign_keys(self, cr, uid, src_partners, dst_partner,
+                             context=None):
+        _logger.debug(
+            '_update_foreign_keys for dst_partner: %s for src_partners: %r',
+            dst_partner.id,
+            list(map(operator.attrgetter('id'), src_partners))
+        )
 
         # find the many2one relation to a partner
         proxy = self.pool.get('res.partner')
@@ -152,7 +172,10 @@ class MergePartnerAutomatic(osv.TransientModel):
                 continue
             partner_ids = tuple(map(int, src_partners))
 
-            query = "SELECT column_name FROM information_schema.columns WHERE table_name LIKE '%s'" % (table)
+            query = """SELECT column_name
+                       FROM information_schema.columns
+                       WHERE table_name LIKE '%s'
+            """ % table
             cr.execute(query, ())
             columns = []
             for data in cr.fetchall():
@@ -179,14 +202,20 @@ class MergePartnerAutomatic(osv.TransientModel):
                                 ___tu.%(value)s = ___tw.%(value)s
                         )""" % query_dic
                 for partner_id in partner_ids:
-                    cr.execute(query, (dst_partner.id, partner_id, dst_partner.id))
+                    cr.execute(
+                        query,
+                        (dst_partner.id, partner_id, dst_partner.id)
+                    )
             else:
                 try:
                     with mute_logger('openerp.sql_db'), savepoint(cr):
-                        query = 'UPDATE "%(table)s" SET %(column)s = %%s WHERE %(column)s IN %%s' % query_dic
+                        query = """UPDATE "%(table)s"
+                                   SET %(column)s = %%s
+                                   WHERE %(column)s IN %%s""" % query_dic
                         cr.execute(query, (dst_partner.id, partner_ids,))
 
-                        if column == proxy._parent_name and table == 'res_partner':
+                        if (column == proxy._parent_name and
+                                table == 'res_partner'):
                             query = """
                                 WITH RECURSIVE cycle(id, parent_id) AS (
                                         SELECT id, parent_id FROM res_partner
@@ -200,43 +229,73 @@ class MergePartnerAutomatic(osv.TransientModel):
                             """
                             cr.execute(query, (dst_partner.id,))
                 except psycopg2.Error:
-                    # updating fails, most likely due to a violated unique constraint
-                    # keeping record with nonexistent partner_id is useless, better delete it
-                    query = 'DELETE FROM %(table)s WHERE %(column)s = %%s' % query_dic
+                    # updating fails, most likely due to a violated unique
+                    # constraint keeping record with nonexistent partner_id is
+                    # useless, better delete it
+                    query = """DELETE FROM %(table)s
+                               WHERE %(column)s = %%s""" % query_dic
                     cr.execute(query, (partner_id,))
 
-    def _update_reference_fields(self, cr, uid, src_partners, dst_partner, context=None):
-        _logger.debug('_update_reference_fields for dst_partner: %s for src_partners: %r', dst_partner.id, list(map(operator.attrgetter('id'), src_partners)))
+    def _update_reference_fields(self, cr, uid, src_partners, dst_partner,
+                                 context=None):
+        _logger.debug(
+            '_update_reference_fields for dst_partner: %s for src_partners: %r',
+            dst_partner.id,
+            list(map(operator.attrgetter('id'), src_partners))
+        )
 
-        def update_records(model, src, field_model='model', field_id='res_id', context=None):
+        def update_records(model, src, field_model='model', field_id='res_id',
+                           context=None):
             proxy = self.pool.get(model)
             if proxy is None:
                 return
-            domain = [(field_model, '=', 'res.partner'), (field_id, '=', src.id)]
-            ids = proxy.search(cr, openerp.SUPERUSER_ID, domain, context=context)
+            domain = [
+                (field_model, '=', 'res.partner'),
+                (field_id, '=', src.id)
+            ]
+            ids = proxy.search(
+                cr, openerp.SUPERUSER_ID, domain, context=context)
             try:
                 with mute_logger('openerp.sql_db'), savepoint(cr):
-                    return proxy.write(cr, openerp.SUPERUSER_ID, ids, {field_id: dst_partner.id}, context=context)
+                    return proxy.write(
+                        cr, openerp.SUPERUSER_ID, ids,
+                        {field_id: dst_partner.id},
+                        context=context
+                    )
             except psycopg2.Error:
-                # updating fails, most likely due to a violated unique constraint
-                # keeping record with nonexistent partner_id is useless, better delete it
-                return proxy.unlink(cr, openerp.SUPERUSER_ID, ids, context=context)
+                # updating fails, most likely due to a violated unique
+                # constraint keeping record with nonexistent partner_id is
+                # useless, better delete it
+                return proxy.unlink(
+                    cr, openerp.SUPERUSER_ID, ids, context=context
+                )
 
         update_records = functools.partial(update_records, context=context)
 
         for partner in src_partners:
-            update_records('calendar', src=partner, field_model='model_id.model')
-            update_records('ir.attachment', src=partner, field_model='res_model')
-            update_records('mail.followers', src=partner, field_model='res_model')
+            update_records(
+                'calendar', src=partner, field_model='model_id.model')
+            update_records(
+                'ir.attachment', src=partner, field_model='res_model')
+            update_records(
+                'mail.followers', src=partner, field_model='res_model')
             update_records('mail.message', src=partner)
-            update_records('marketing.campaign.workitem', src=partner, field_model='object_id.model')
+            update_records(
+                'marketing.campaign.workitem',
+                src=partner,
+                field_model='object_id.model'
+            )
             update_records('ir.model.data', src=partner)
 
         proxy = self.pool['ir.model.fields']
         domain = [('ttype', '=', 'reference')]
-        record_ids = proxy.search(cr, openerp.SUPERUSER_ID, domain, context=context)
+        record_ids = proxy.search(
+            cr, openerp.SUPERUSER_ID, domain, context=context)
 
-        for record in proxy.browse(cr, openerp.SUPERUSER_ID, record_ids, context=context):
+        records = proxy.browse(
+            cr, openerp.SUPERUSER_ID, record_ids, context=context
+        )
+        for record in records:
             try:
                 proxy_model = self.pool[record.model]
                 field_type = proxy_model._columns[record.name].__class__._type
@@ -251,16 +310,26 @@ class MergePartnerAutomatic(osv.TransientModel):
                 domain = [
                     (record.name, '=', 'res.partner,%d' % partner.id)
                 ]
-                model_ids = proxy_model.search(cr, openerp.SUPERUSER_ID, domain, context=context)
+                model_ids = proxy_model.search(
+                    cr, openerp.SUPERUSER_ID, domain, context=context
+                )
                 values = {
                     record.name: 'res.partner,%d' % dst_partner.id,
                 }
-                proxy_model.write(cr, openerp.SUPERUSER_ID, model_ids, values, context=context)
+                proxy_model.write(
+                    cr, openerp.SUPERUSER_ID, model_ids, values,
+                    context=context
+                )
 
     def _update_values(self, cr, uid, src_partners, dst_partner, context=None):
-        _logger.debug('_update_values for dst_partner: %s for src_partners: %r', dst_partner.id, list(map(operator.attrgetter('id'), src_partners)))
+        _logger.debug(
+            '_update_values for dst_partner: %s for src_partners: %r',
+            dst_partner.id,
+            list(map(operator.attrgetter('id'), src_partners))
+        )
 
         columns = dst_partner._columns
+
         def write_serializer(column, item):
             if isinstance(item, browse_record):
                 return item.id
@@ -269,7 +338,8 @@ class MergePartnerAutomatic(osv.TransientModel):
 
         values = dict()
         for column, field in columns.iteritems():
-            if field._type not in ('many2many', 'one2many') and not isinstance(field, fields.function):
+            if (field._type not in ('many2many', 'one2many') and
+                    not isinstance(field, fields.function)):
                 for item in itertools.chain(src_partners, [dst_partner]):
                     if item[column]:
                         values[column] = write_serializer(column, item[column])
@@ -281,7 +351,11 @@ class MergePartnerAutomatic(osv.TransientModel):
             try:
                 dst_partner.write({'parent_id': parent_id})
             except (osv.except_osv, orm.except_orm):
-                _logger.info('Skip recursive partner hierarchies for parent_id %s of partner: %s', parent_id, dst_partner.id)
+                _logger.info(
+                    'Skip recursive partner hierarchies for parent_id %s '
+                    'of partner: %s',
+                    parent_id, dst_partner.id
+                )
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
     def _merge(self, cr, uid, partner_ids, dst_partner=None, context=None):
@@ -311,9 +385,14 @@ class MergePartnerAutomatic(osv.TransientModel):
                 )
 
         if dst_partner and dst_partner.id in partner_ids:
-            src_partners = proxy.browse(cr, uid, [id for id in partner_ids if id != dst_partner.id], context=context)
+            src_partners = proxy.browse(
+                cr, uid,
+                [id for id in partner_ids if id != dst_partner.id],
+                context=context
+            )
         else:
-            ordered_partners = self._get_ordered_partner(cr, uid, partner_ids, context)
+            ordered_partners = self._get_ordered_partner(
+                cr, uid, partner_ids, context)
             dst_partner = ordered_partners[-1]
             src_partners = ordered_partners[:-1]
         _logger.info("dst_partner: %s", dst_partner.id)
@@ -342,8 +421,21 @@ class MergePartnerAutomatic(osv.TransientModel):
         call_it(self._update_reference_fields)
         call_it(self._update_values)
 
-        _logger.info('(uid = %s) merged the partners %r with %s', uid, list(map(operator.attrgetter('id'), src_partners)), dst_partner.id)
-        dst_partner.message_post(body='%s %s'%(_("Merged with the following partners:"), ", ".join('%s<%s>(ID %s)' % (p.name, p.email or 'n/a', p.id) for p in src_partners)))
+        _logger.info(
+            '(uid = %s) merged the partners %r with %s',
+            uid,
+            list(map(operator.attrgetter('id'), src_partners)),
+            dst_partner.id
+        )
+
+        name_emails = [(p.name, p.email or 'n/a', p.id) for p in src_partners]
+        name_emails = ', '.join('%s<%s>(ID %s)' % name for name in name_emails)
+        dst_partner.message_post(
+            body='%s %s' % (
+                _("Merged with the following partners:"),
+                name_emails
+            )
+        )
 
         for partner in src_partners:
             partner.unlink()
@@ -443,10 +535,14 @@ class MergePartnerAutomatic(osv.TransientModel):
         return groups
 
     def _get_ordered_partner(self, cr, uid, partner_ids, context=None):
-        partners = self.pool.get('res.partner').browse(cr, uid, list(partner_ids), context=context)
-        ordered_partners = sorted(sorted(partners,
-                            key=operator.attrgetter('create_date'), reverse=True),
-                                key=operator.attrgetter('active'), reverse=True)
+        partners = self.pool.get('res.partner').browse(
+            cr, uid, list(partner_ids), context=context
+        )
+        ordered_partners = sorted(
+            partners,
+            key=lambda partner: (partner.create_date, partner.active),
+            reverse=True
+        )
         return ordered_partners
 
     def _next_screen(self, cr, uid, this, context=None):
@@ -459,7 +555,8 @@ class MergePartnerAutomatic(osv.TransientModel):
             values.update({
                 'current_line_id': current_line.id,
                 'partner_ids': [(6, 0, current_partner_ids)],
-                'dst_partner_id': self._get_ordered_partner(cr, uid, current_partner_ids, context)[-1].id,
+                'dst_partner_id': self._get_ordered_partner(
+                    cr, uid, current_partner_ids, context)[-1].id,
                 'state': 'selection',
             })
         else:
@@ -484,11 +581,9 @@ class MergePartnerAutomatic(osv.TransientModel):
         domain = [('model', '=', model)]
         return proxy.search_count(cr, uid, domain, context=context) > 0
 
-    def _partner_use_in(self, cr, uid, aggr_ids, models, context=None):
-        """
-        Check if there is no occurence of this group of partner in the selected
-        model
-        """
+    def _partner_used_in(self, cr, uid, aggr_ids, models, context=None):
+        """True if any partner in `aggr_ids` is associated to `model`."""
+        models = models or {}
         for model, field in models.iteritems():
             proxy = self.pool.get(model)
             domain = [(field, 'in', aggr_ids)]
@@ -497,9 +592,10 @@ class MergePartnerAutomatic(osv.TransientModel):
         return False
 
     def compute_models(self, cr, uid, ids, context=None):
-        """
-        Compute the different models needed by the system if you want to exclude
-        some partners.
+        """Return the model -> field associated to partner.
+
+        If you want to exclude certain partners from the search this method
+        returns the information needed for the exclusion system.
         """
         assert is_integer_list(ids)
 
@@ -509,15 +605,16 @@ class MergePartnerAutomatic(osv.TransientModel):
         if this.exclude_contact:
             models['res.users'] = 'partner_id'
 
-        if self._model_is_installed(cr, uid, 'account.move.line', context=context) and this.exclude_journal_item:
+        account_move_line_is_installed = self._model_is_installed(
+            cr, uid, 'account.move.line', context=context
+        )
+        if this.exclude_journal_item and account_move_line_is_installed:
             models['account.move.line'] = 'partner_id'
 
         return models
 
     def _process_query(self, cr, uid, ids, query, context=None):
-        """
-        Execute the select request and write the result in this wizard
-        """
+        """Execute the select request and write the results."""
         proxy = self.pool.get('base.partner.merge.line')
         this = self.browse(cr, uid, ids[0], context=context)
         models = self.compute_models(cr, uid, ids, context=context)
@@ -525,15 +622,17 @@ class MergePartnerAutomatic(osv.TransientModel):
 
         groups = []
         for min_id, aggr_ids in cr.fetchall():
-            if models and self._partner_use_in(cr, uid, aggr_ids, models, context=context):
-                continue
-            found_ids = set(aggr_ids + [min_id])
-            for group in groups:
-                if any(found_id in group for found_id in found_ids):
-                    group.update(found_ids)
-                    break
-            else:
-                groups.append(found_ids)
+            is_partner_used_in_models = self._partner_used_in(
+                cr, uid, aggr_ids, models, context=context
+            )
+            if not is_partner_used_in_models:
+                found_ids = set(aggr_ids + [min_id])
+                for group in groups:
+                    if any(found_id in group for found_id in found_ids):
+                        group.update(found_ids)
+                        break
+                else:
+                    groups.append(found_ids)
 
         for group in groups:
             values = {
