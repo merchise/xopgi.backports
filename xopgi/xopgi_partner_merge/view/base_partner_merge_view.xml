@@ -4,28 +4,28 @@
         <!-- the sequence of the configuration sub menu is 30 -->
         <menuitem id='root_menu' name='Tools' parent='base.menu_base_partner' sequence="25"/>
 
-        <record model="ir.actions.act_window" id="base_partner_merge_automatic_act">
+        <record model="ir.actions.act_window" id="base_partner_merge_act">
             <field name="name">Deduplicate Contacts</field>
-            <field name="res_model">base.partner.merge.automatic.wizard</field>
+            <field name="res_model">base.partner.merge.wizard</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
             <field name="context">{'active_test': False}</field>
         </record>
 
-        <menuitem id='partner_merge_automatic_menu'
-            action='base_partner_merge_automatic_act'
+        <menuitem id='partner_merge_menu'
+            action='base_partner_merge_act'
             groups='base.group_system'
             parent='root_menu' />
 
-        <record model='ir.ui.view' id='base_partner_merge_automatic_wizard_form'>
-            <field name='name'>base.partner.merge.automatic.wizard.form</field>
-            <field name='model'>base.partner.merge.automatic.wizard</field>
+        <record model='ir.ui.view' id='base_partner_merge_wizard_form'>
+            <field name='name'>base.partner.merge.wizard.form</field>
+            <field name='model'>base.partner.merge.wizard</field>
             <field name='arch' type='xml'>
-                <form string='Automatic Merge Wizard' version="7.0">
+                <form string='Merge Wizard' version="7.0">
                     <header>
                         <button name='start_process_cb'
-                            string='Merge with Manual Check'
+                            string='Search for similar partners'
                             type='object'  class='oe_highlight'
                             attrs="{'invisible': [('state', '!=', 'option')]}" />
                         <span class="or_cancel" attrs="{'invisible': [('state', '=', 'finished')]} ">or

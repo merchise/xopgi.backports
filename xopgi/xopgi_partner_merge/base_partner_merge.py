@@ -56,7 +56,7 @@ class MergePartnerLine(osv.TransientModel):
     _name = str('base.partner.merge.line')
 
     _columns = {
-        'wizard_id': fields.many2one('base.partner.merge.automatic.wizard',
+        'wizard_id': fields.many2one('base.partner.merge.wizard',
                                      'Wizard'),
         'min_id': fields.integer('MinID'),
         'aggr_ids': fields.char('Ids', required=True),
@@ -65,7 +65,7 @@ class MergePartnerLine(osv.TransientModel):
     _order = 'min_id asc'
 
 
-class MergePartnerAutomatic(osv.TransientModel):
+class MergePartner(osv.TransientModel):
     """This wizard find potential partners to merge.
 
     It uses to objects, the first is wizard it self for the end-user, and the
@@ -73,7 +73,7 @@ class MergePartnerAutomatic(osv.TransientModel):
 
     """
 
-    _name = str('base.partner.merge.automatic.wizard')
+    _name = str('base.partner.merge.wizard')
 
     _columns = {
         # Group by
@@ -112,7 +112,7 @@ class MergePartnerAutomatic(osv.TransientModel):
     def default_get(self, cr, uid, fields, context=None):
         if context is None:
             context = {}
-        res = super(MergePartnerAutomatic, self).default_get(
+        res = super(MergePartner, self).default_get(
             cr, uid, fields, context
         )
         if (context.get('active_model') == 'res.partner'
