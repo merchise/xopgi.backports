@@ -520,35 +520,6 @@ class MergePartner(osv.TransientModel):
         )
         return ordered_partners
 
-    def _next_screen(self, cr, uid, this, context=None):
-        this.refresh()
-        values = {}
-        if this.line_ids:
-            # in this case, we try to find the next record.
-            current_line = this.line_ids[0]
-            current_partner_ids = literal_eval(current_line.aggr_ids)
-            values.update({
-                'current_line_id': current_line.id,
-                'partner_ids': [(6, 0, current_partner_ids)],
-                'dst_partner_id': self._get_ordered_partner(
-                    cr, uid, current_partner_ids, context)[-1].id,
-            })
-        else:
-            values.update({
-                'current_line_id': False,
-                'partner_ids': [],
-            })
-
-        this.write(values)
-
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': this._name,
-            'res_id': this.id,
-            'view_mode': 'form',
-            'target': 'new',
-        }
-
     def _model_is_installed(self, cr, uid, model, context=None):
         proxy = self.pool.get('ir.model')
         domain = [('model', '=', model)]
@@ -644,4 +615,10 @@ class MergePartner(osv.TransientModel):
         )
         self._process_query(cr, uid, ids, query, context=context)
 
-        return self._next_screen(cr, uid, this, context)
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': this._name,
+            'res_id': this.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
