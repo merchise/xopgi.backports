@@ -140,7 +140,6 @@ class MergePartnerWizard(osv.TransientModel):
         # Options
         'maximum_group':
             fields.integer("Maximum of Group of Contacts"),
-
     }
 
     _defaults = {
@@ -603,7 +602,7 @@ class MergePartnerWizard(osv.TransientModel):
 
     def _process_query(self, cr, uid, ids, query, context=None):
         """Execute the select request and write the results."""
-        proxy = self.pool.get('base.partner.merge.line')
+        proxy = self.pool.get('merge.partner.line')
         this = self.browse(cr, uid, ids[0], context=context)
         models = self.compute_models(cr, uid, ids, context=context)
         cr.execute(query)
