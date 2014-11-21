@@ -96,22 +96,8 @@ class MergePartner(osv.TransientModel):
         # Options
         'maximum_group':
             fields.integer("Maximum of Group of Contacts"),
-    }
 
-    def default_get(self, cr, uid, fields, context=None):
-        if context is None:
-            context = {}
-        res = super(MergePartner, self).default_get(
-            cr, uid, fields, context
-        )
-        if (context.get('active_model') == 'res.partner'
-                and context.get('active_ids')):
-            partner_ids = context['active_ids']
-            res['partner_ids'] = partner_ids
-            res['dst_partner_id'] = self._get_ordered_partner(
-                cr, uid, partner_ids, context=context
-            )[-1].id
-        return res
+    }
 
     _defaults = {
         'group_by_name': True,
