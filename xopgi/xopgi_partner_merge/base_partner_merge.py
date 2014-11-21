@@ -23,6 +23,25 @@ from openerp.tools.translate import _
 
 from xoeuf.osv import savepoint
 
+
+# from xoeuf.osv.model_extensions import field_value   # migrate
+
+
+def field_value(model, cr, uid, ids, field_name, context=None):
+    """Read a field value from a set of objects.
+
+    :return: a dictionary mapping ids -> field value
+
+    :rtype: dict
+
+    """
+    result = model.read(cr, uid, ids, fields=[field_name], context=context)
+    if isinstance(result, dict):
+        return result
+    else:
+        return {r['id']: r.get(field_name) for r in result}
+
+
 _logger = logging.getLogger('base.partner.merge')
 
 
