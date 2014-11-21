@@ -73,7 +73,7 @@ class ResPartner(osv.Model):
 
 
 class MergePartnerLine(osv.TransientModel):
-    """Represent a partener o a parter group.
+    """Represent a partner o a parter group.
 
     - Is a partner when `parent_id` points to another instance of the same
       type representing the group.
