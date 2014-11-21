@@ -77,29 +77,23 @@ class MergePartner(osv.TransientModel):
     _name = str('base.partner.merge.wizard')
 
     _columns = {
-        # Group by
+        # Filter by
         'filter_by_name': fields.char('Name', required=False),
+
+        # Search duplicates based on duplicated data in
         'group_by_email': fields.boolean('Email'),
         'group_by_name': fields.boolean('Name'),
         'group_by_is_company': fields.boolean('Is Company'),
         'group_by_vat': fields.boolean('VAT'),
         'group_by_parent_id': fields.boolean('Parent Company'),
 
-        'number_group':
-            fields.integer("Group of Contacts", readonly=True),
-        'current_line_id':
-            fields.many2one('base.partner.merge.line', 'Current Line'),
-        'line_ids':
-            fields.one2many('base.partner.merge.line', 'wizard_id', 'Lines'),
-        'partner_ids':
-            fields.many2many('res.partner', string='Contacts'),
-        'dst_partner_id':
-            fields.many2one('res.partner', string='Destination Contact'),
-
+        # Exclude contacts having
         'exclude_contact':
             fields.boolean('A user associated to the contact'),
         'exclude_journal_item':
             fields.boolean('Journal Items associated to the contact'),
+
+        # Options
         'maximum_group':
             fields.integer("Maximum of Group of Contacts"),
     }
