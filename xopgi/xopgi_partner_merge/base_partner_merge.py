@@ -12,7 +12,6 @@ import itertools
 import logging
 import operator
 import psycopg2
-import re
 from ast import literal_eval
 from openerp.tools import mute_logger
 
@@ -23,8 +22,6 @@ from openerp.osv.orm import browse_record
 from openerp.tools.translate import _
 
 from xoeuf.osv import savepoint
-
-pattern = re.compile("&(\w+?);")
 
 _logger = logging.getLogger('base.partner.merge')
 
