@@ -7,9 +7,7 @@ from __future__ import (absolute_import as _py3_abs_imports,
                         print_function as _py3_print)
 
 
-from email.utils import parseaddr
 import functools
-import htmlentitydefs
 import itertools
 import logging
 import operator
@@ -17,9 +15,6 @@ import psycopg2
 import re
 from ast import literal_eval
 from openerp.tools import mute_logger
-
-# Validation Library https://pypi.python.org/pypi/validate_email/1.1
-from .validate_email import validate_email
 
 import openerp
 from openerp.osv import osv, orm
