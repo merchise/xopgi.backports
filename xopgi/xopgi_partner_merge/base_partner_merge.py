@@ -73,16 +73,41 @@ class ResPartner(osv.Model):
 
 
 class MergePartnerLine(osv.TransientModel):
-    _name = str('base.partner.merge.line')
+    """Represent a partener o a parter group.
+
+    - Is a partner when `parent_id` points to another instance of the same
+      type representing the group.
+
+    - Is a group when has no `parent_id`  and several partners point to here.
+      In this case the referenced partner is the destination partner.
+
+    """
+
+    _name = str('merge.partner.line')
 
     _columns = {
-        'wizard_id': fields.many2one('base.partner.merge.wizard',
-                                     'Wizard'),
-        'min_id': fields.integer('MinID'),
-        'aggr_ids': fields.char('Ids', required=True),
+        'wizard_id': fields.many2one(
+            'base.partner.merge.wizard',
+            string=_('Wizard'),
+        ),
+        'parent_id': fields.many2one(
+            'similar.parent.line',
+            string=_('Group'),
+        ),
+        'partner_id': fields.many2one(
+            'res.partner',
+        )
     }
 
-    _order = 'min_id asc'
+    _order = 'partner_id asc'
+
+    def name_get(self, cr, uid, ids, context=None):
+        res_partner = self.pool.get('res.partner')
+        groups = field_value(self, cr, uid, ids, 'partner_id', context=context)
+        partner_ids = groups.values()
+        partners_names = field_value(
+            res_partner, cr, uid, partner_ids, 'name', context=context)
+        return {id: partners_names[groups[id]] for id in ids}
 
 
 class MergePartner(osv.TransientModel):
