@@ -71,8 +71,20 @@
             </field>
         </record>
 
-        <act_window id="action_partner_merge" res_model="base.partner.merge.automatic.wizard" src_model="res.partner"
-            target="new" multi="True" key2="client_action_multi" view_mode="form" name="Automatic Merge"/>
+        <record>
+
+        </record>
+
+        <act_window
+            id="action_partner_merge"
+            res_model="base.partner.merge.wizard"
+            src_model="res.partner"
+            target="new"
+            multi="True"
+            key2="client_action_multi"
+            view_mode="form"
+            name="Merge"
+        />
 
     </data>
 
