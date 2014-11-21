@@ -83,7 +83,7 @@ class MergePartnerLine(osv.TransientModel):
 
     """
 
-    _name = str('merge.partner.line')
+    _name = str('base.partner.merge.line')
 
     _columns = {
         'wizard_id': fields.many2one(
@@ -91,7 +91,7 @@ class MergePartnerLine(osv.TransientModel):
             string=_('Wizard'),
         ),
         'parent_id': fields.many2one(
-            'similar.parent.line',
+            'base.partner.merge.line',
             string=_('Group'),
         ),
         'partner_id': fields.many2one(
@@ -644,6 +644,7 @@ class MergePartnerWizard(osv.TransientModel):
         """Start the process.
 
         * Compute the selected groups (with duplication)
+
         * If the user has selected the 'exclude_XXX' fields, avoid the partners.
 
         """
