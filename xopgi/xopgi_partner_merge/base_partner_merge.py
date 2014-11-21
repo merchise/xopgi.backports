@@ -84,12 +84,6 @@ class MergePartner(osv.TransientModel):
         'group_by_vat': fields.boolean('VAT'),
         'group_by_parent_id': fields.boolean('Parent Company'),
 
-        'state': fields.selection([('option', 'Option'),
-                                   ('selection', 'Selection'),
-                                   ('finished', 'Finished')],
-                                  'State',
-                                  readonly=True,
-                                  required=True),
         'number_group':
             fields.integer("Group of Contacts", readonly=True),
         'current_line_id':
@@ -118,7 +112,6 @@ class MergePartner(osv.TransientModel):
         if (context.get('active_model') == 'res.partner'
                 and context.get('active_ids')):
             partner_ids = context['active_ids']
-            res['state'] = 'selection'
             res['partner_ids'] = partner_ids
             res['dst_partner_id'] = self._get_ordered_partner(
                 cr, uid, partner_ids, context=context
@@ -126,7 +119,6 @@ class MergePartner(osv.TransientModel):
         return res
 
     _defaults = {
-        'state': 'option',
         'group_by_name': True,
         'group_by_email': True,
     }
@@ -554,13 +546,11 @@ class MergePartner(osv.TransientModel):
                 'partner_ids': [(6, 0, current_partner_ids)],
                 'dst_partner_id': self._get_ordered_partner(
                     cr, uid, current_partner_ids, context)[-1].id,
-                'state': 'selection',
             })
         else:
             values.update({
                 'current_line_id': False,
                 'partner_ids': [],
-                'state': 'finished',
             })
 
         this.write(values)
@@ -642,7 +632,6 @@ class MergePartner(osv.TransientModel):
         counter = len(groups)
 
         values = {
-            'state': 'selection',
             'number_group': counter,
         }
 

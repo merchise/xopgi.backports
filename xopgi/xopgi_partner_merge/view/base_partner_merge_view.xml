@@ -24,47 +24,47 @@
             <field name='arch' type='xml'>
                 <form string='Merge Wizard' version="7.0">
                     <header>
-                        <button name='start_process_cb'
+                        <button
+                            name='start_process_cb'
                             string='Search for similar partners'
-                            type='object'  class='oe_highlight'
-                            attrs="{'invisible': [('state', '!=', 'option')]}" />
-                        <span class="or_cancel" attrs="{'invisible': [('state', '=', 'finished')]} ">or
-                            <button name="close_cb" special="nosave" string="Cancel" type="object" class="oe_link oe_inline"/>
-                        </span>
-                        <span class="or_cancel" attrs="{'invisible': [('state', '!=', 'finished')]} ">
-                            <button name="close_cb" special="nosave"
-                                string="Close"
+                            type='object'
+                            class='oe_highlight'
+                        />
+                        <span class="or_cancel">
+                            or
+                            <button
+                                name="close_cb"
+                                special="nosave"
+                                string="Cancel"
                                 type="object"
-                                class="oe_link oe_inline"/>
+                                class="oe_link oe_inline"
+                            />
                         </span>
                     </header>
                     <sheet>
-                        <p class="oe_grey" attrs="{'invisible': [('state', '!=', ('option'))]}">
+                        <p class="oe_grey">
                             Select the list of fields used to search for
                             duplicated records. If you select several fields,
                             Odoo will propose you to merge only those having
                             all these fields in common. (not one of the fields).
                         </p>
-                        <group string="Filter by"
-                            attrs="{'invisible': [('state', 'not in', ('option',))]}">
+                        <group string="Filter by">
                             <field name='filter_by_name' />
                         </group>
-                        <group string="Search duplicates based on duplicated data in"
-                            attrs="{'invisible': [('state', 'not in', ('option',))]}">
+                        <group string="Search duplicates based on duplicated data in">
                             <field name='group_by_name' />
                             <field name='group_by_email' />
                             <field name='group_by_is_company' />
                             <field name='group_by_vat' />
                             <field name='group_by_parent_id' />
                         </group>
-                        <group string="Exclude contacts having"
-                            attrs="{'invisible': [('state', 'not in', ('option',))]}">
+                        <group string="Exclude contacts having">
                             <field name='exclude_contact' />
                             <field name='exclude_journal_item' />
                         </group>
-                        <separator string="Options" attrs="{'invisible': [('state', 'not in', ('option',))]}"/>
-                        <group attrs="{'invisible': [('state', 'not in', ('option','finished'))]}">
-                            <field name='maximum_group' attrs="{'readonly': [('state', 'in', ('finished'))]}"/>
+                        <separator string="Options"/>
+                        <group>
+                            <field name='maximum_group'/>
                         </group>
                     </sheet>
                 </form>
