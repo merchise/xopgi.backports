@@ -12,7 +12,6 @@ import itertools
 import logging
 import operator
 import psycopg2
-from ast import literal_eval
 from openerp.tools import mute_logger
 
 import openerp
