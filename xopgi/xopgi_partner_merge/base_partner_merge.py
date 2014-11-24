@@ -105,6 +105,10 @@ class MergePartnerLine(osv.TransientModel):
             'base.partner.merge.wizard',
             string=_('Wizard'),
         ),
+        'dest_partner_id': fields.many2one(
+            'res.partner',
+            string=_('Destination partner'),
+        ),
         'partner_ids': fields.many2many(
             'res.partner',
             rel='base_partner_merge_group_partners',
