@@ -84,6 +84,19 @@ class MergePartnerLine(osv.TransientModel):
 
     """
 
+    def _get_name(self, cr, uid, ids, name, args=None, context=None):
+        res_partner = self.pool.get('res.partner')
+        groups = field_value(self, cr, uid, ids, 'partner_ids', context=context)
+        return {
+            id: field_value(
+                res_partner,
+                cr, uid,
+                partner_ids[0],
+                'name',
+                context=context
+            )
+            for id, partner_ids in groups.iteritems()
+        }
 
     _name = str('base.partner.merge.group')
 
@@ -92,18 +105,23 @@ class MergePartnerLine(osv.TransientModel):
             'base.partner.merge.wizard',
             string=_('Wizard'),
         ),
-        'partner_id': fields.many2one(
+        'partner_ids': fields.many2many(
             'res.partner',
+            rel='base_partner_merge_group_partners',
+            id1='category_id',
+            id2='partner_id',
+            string='Partners'
+        ),
+        'name': fields.function(
+            _get_name,
+            string='Name',
+            type='char',
+            readonly=True,
+            store=True,
         )
     }
 
-    def name_get(self, cr, uid, ids, context=None):
-        res_partner = self.pool.get('res.partner')
-        groups = field_value(self, cr, uid, ids, 'partner_id', context=context)
-        partner_ids = groups.values()
-        partners_names = field_value(
-            res_partner, cr, uid, partner_ids, 'name', context=context)
-        return {id: partners_names[groups[id]] for id in ids}
+    _order = 'name asc'
 
 
 class MergePartnerWizard(osv.TransientModel):
