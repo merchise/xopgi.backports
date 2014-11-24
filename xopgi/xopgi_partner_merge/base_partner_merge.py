@@ -84,23 +84,18 @@ class MergePartnerLine(osv.TransientModel):
 
     """
 
-    _name = str('base.partner.merge.line')
+
+    _name = str('base.partner.merge.group')
 
     _columns = {
         'wizard_id': fields.many2one(
             'base.partner.merge.wizard',
             string=_('Wizard'),
         ),
-        'parent_id': fields.many2one(
-            'base.partner.merge.line',
-            string=_('Group'),
-        ),
         'partner_id': fields.many2one(
             'res.partner',
         )
     }
-
-    _order = 'partner_id asc'
 
     def name_get(self, cr, uid, ids, context=None):
         res_partner = self.pool.get('res.partner')
