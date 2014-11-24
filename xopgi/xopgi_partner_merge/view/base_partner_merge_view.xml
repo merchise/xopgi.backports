@@ -89,6 +89,7 @@
                                 <field name="phone"></field>
                                 <field name="mobile"></field>
                                 <field name="email"></field>
+                                <field name="is_company"></field>
                             </tree>
                         </field>
                     </group>
