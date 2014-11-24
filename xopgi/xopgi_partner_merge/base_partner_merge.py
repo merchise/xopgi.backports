@@ -660,11 +660,10 @@ class MergePartnerWizard(osv.TransientModel):
             maximum_group=this.maximum_group,
         )
         self._process_query(cr, uid, ids, query, context=context)
-
         return {
             'type': 'ir.actions.act_window',
-            'res_model': this._name,
-            'res_id': this.id,
-            'view_mode': 'form',
-            'target': 'new',
+            'res_model': 'base.partner.merge.group',
+            'domain': [('wizard_id', '=', this.id)],
+            'view_type': 'form',
+            'view_mode': 'tree,form',
         }
