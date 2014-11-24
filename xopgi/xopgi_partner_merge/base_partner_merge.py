@@ -616,7 +616,7 @@ class MergePartnerWizard(osv.TransientModel):
 
     def _process_query(self, cr, uid, ids, query, context=None):
         """Execute the select request and write the results."""
-        proxy = self.pool.get('merge.partner.line')
+        proxy = self.pool.get('base.partner.merge.group')
         this = self.browse(cr, uid, ids[0], context=context)
         models = self.compute_models(cr, uid, ids, context=context)
         cr.execute(query)
@@ -635,25 +635,11 @@ class MergePartnerWizard(osv.TransientModel):
                 else:
                     groups.append(found_ids)
 
+        from xoeuf.osv.model_extensions import get_creator
+
         for group in groups:
-            group_id = proxy.create(
-                cr, uid,
-                {
-                    'wizard_id': this.id,
-                    'partner_id': min(group),
-                },
-                context=context
-            )
-            for partner_id in group:
-                proxy.create(
-                    cr, uid,
-                    {
-                        'wizard_id': this.id,
-                        'parent_id': group_id,
-                        'partner_id': min(group),
-                    },
-                    context=context
-                )
+            with get_creator(proxy, cr, uid, context=context) as creator:
+                creator.update(wizard_id=this.id, partner_ids=group)
 
     def start_process_cb(self, cr, uid, ids, context=None):
         """Start the process.
