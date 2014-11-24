@@ -34,9 +34,11 @@ def field_value(model, cr, uid, ids, field_name, *args, **kwargs):
     :rtype: dict
 
     """
-    if isinstance(result, dict):
     result = model.read(cr, uid, ids, fields=[field_name], *args, **kwargs)
+    if result is False:
         return result
+    if isinstance(result, dict):
+        return result[field_name]
     else:
         return {r['id']: r.get(field_name) for r in result}
 
