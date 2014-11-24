@@ -71,6 +71,31 @@
             </field>
         </record>
 
+        <record model='ir.ui.view' id='base_partner_merge_group_form'>
+            <field name='name'>base.partner.merge.group.form</field>
+            <field name='model'>base.partner.merge.group</field>
+            <field name='arch' type='xml'>
+                <form string='Partner group' version="7.0">
+                    <group>
+                        <field
+                            name="dest_partner_id"
+                            string="Destination partner"
+                        ></field>
+                    </group>
+                    <group string="Partners to merge">
+                        <field name="partner_ids">
+                            <tree>
+                                <field name="name"></field>
+                                <field name="phone"></field>
+                                <field name="mobile"></field>
+                                <field name="email"></field>
+                            </tree>
+                        </field>
+                    </group>
+                </form>
+            </field>
+        </record>
+
         <act_window
             id="action_partner_merge"
             res_model="base.partner.merge.wizard"
