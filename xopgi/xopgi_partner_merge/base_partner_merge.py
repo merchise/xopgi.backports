@@ -51,6 +51,12 @@ def is_integer_list(ids):
     return all(isinstance(i, (int, long)) for i in ids)
 
 
+def model_is_installed(pool, cr, uid, model, context=None):
+    proxy = pool.get('ir.model')
+    domain = [('model', '=', model)]
+    return proxy.search_count(cr, uid, domain, context=context) > 0
+
+
 class PartnerMergeInit(osv.TransientModel):
     _name = str('base.partner.merge.initialize')
 
@@ -123,62 +129,110 @@ class MergePartnerLine(osv.TransientModel):
 
     _order = 'name asc'
 
+    def merge(self, cr, uid, ids, context=None):
+        assert is_integer_list(ids)
 
-class MergePartnerWizard(osv.TransientModel):
-    """This wizard find potential partners to merge.
+        context = dict(context or {}, active_test=False)
+        this = self.browse(cr, uid, ids[0], context=context)
+        partner_ids = set(map(int, this.partner_ids))
+        self._merge(cr, uid, partner_ids, this.dest_partner_id, context=context)
 
-    It uses to objects, the first is wizard it self for the end-user, and the
-    second will contain the partner list to merge.
+    @mute_logger('openerp.osv.expression', 'openerp.models')
+    def _merge(self, cr, uid, partner_ids, dst_partner=None, context=None):
+        """Merge seveal partners into just one."""
+        proxy = self.pool.get('res.partner')
 
-    """
+        partner_ids = proxy.exists(cr, uid, list(partner_ids), context=context)
+        if len(partner_ids) < 2:
+            return
 
-    _name = str('base.partner.merge.wizard')
+        is_superuser = uid == openerp.SUPERUSER_ID
 
-    _columns = {
-        # Filter by
-        'filter_by_name': fields.char('Name', required=False),
+        if not is_superuser:
+            if len(partner_ids) > 3:
+                raise osv.except_osv(
+                    _('Error'),
+                    _("For safety reasons, you cannot merge more than 3 "
+                      "contacts together. You can re-open the wizard several "
+                      "times if needed.")
+                )
 
-        # Search duplicates based on duplicated data in
-        'group_by_email': fields.boolean('Email'),
-        'group_by_name': fields.boolean('Name'),
-        'group_by_is_company': fields.boolean('Is Company'),
-        'group_by_vat': fields.boolean('VAT'),
-        'group_by_parent_id': fields.boolean('Parent Company'),
+            partners = proxy.browse(cr, uid, partner_ids, context=context)
+            if len(set(p.email for p in partners)) > 1:
+                raise osv.except_osv(
+                    _('Error'),
+                    _("All contacts must have the same email. Only the "
+                      "Administrator can merge contacts with different emails.")
+                )
 
-        # Exclude contacts having
-        'exclude_contact':
-            fields.boolean('A user associated to the contact'),
-        'exclude_journal_item':
-            fields.boolean('Journal Items associated to the contact'),
+        if dst_partner and dst_partner.id in partner_ids:
+            src_partners = proxy.browse(
+                cr, uid,
+                [id for id in partner_ids if id != dst_partner.id],
+                context=context
+            )
+        else:
+            ordered_partners = self._get_ordered_partner(
+                cr, uid, partner_ids, context)
+            dst_partner = ordered_partners[-1]
+            src_partners = ordered_partners[:-1]
+        _logger.info("dst_partner: %s", dst_partner.id)
 
-        # Options
-        'maximum_group':
-            fields.integer("Maximum of Group of Contacts"),
-    }
+        src_parters_has_account_move_lines = (
+            not is_superuser and
+            model_is_installed(
+                self.pool, cr, uid, 'account.move.line', context=context
+            ) and
+            self.pool.get('account.move.line').search(
+                cr, openerp.SUPERUSER_ID,
+                [('partner_id', 'in', [p.id for p in src_partners])],
+                context=context)
+        )
+        if src_parters_has_account_move_lines:
+            raise osv.except_osv(
+                _('Error'),
+                _("Only the destination contact may be linked to existing "
+                  "Journal Items. Please ask the Administrator if you need to "
+                  "merge several contacts linked to existing Journal Items.")
+            )
 
-    _defaults = {
-        'group_by_name': True,
-        'group_by_email': True,
-    }
+        call_it = lambda function: function(cr, uid, src_partners, dst_partner,
+                                            context=context)
 
-    def get_fk_on(self, cr, table):
-        q = """  SELECT cl1.relname as table,
-                        att1.attname as column
-                   FROM pg_constraint as con, pg_class as cl1, pg_class as cl2,
-                        pg_attribute as att1, pg_attribute as att2
-                  WHERE con.conrelid = cl1.oid
-                    AND con.confrelid = cl2.oid
-                    AND array_lower(con.conkey, 1) = 1
-                    AND con.conkey[1] = att1.attnum
-                    AND att1.attrelid = cl1.oid
-                    AND cl2.relname = %s
-                    AND att2.attname = 'id'
-                    AND array_lower(con.confkey, 1) = 1
-                    AND con.confkey[1] = att2.attnum
-                    AND att2.attrelid = cl2.oid
-                    AND con.contype = 'f'
-        """
-        return cr.execute(q, (table,))
+        call_it(self._update_foreign_keys)
+        call_it(self._update_reference_fields)
+        call_it(self._update_values)
+
+        _logger.info(
+            '(uid = %s) merged the partners %r with %s',
+            uid,
+            list(map(operator.attrgetter('id'), src_partners)),
+            dst_partner.id
+        )
+
+        name_emails = [(p.name, p.email or 'n/a', p.id) for p in src_partners]
+        name_emails = ', '.join('%s<%s>(ID %s)' % name for name in name_emails)
+        dst_partner.message_post(
+            body='%s %s' % (
+                _("Merged with the following partners:"),
+                name_emails
+            )
+        )
+
+        for partner in src_partners:
+            partner.unlink()
+
+    def _get_ordered_partner(self, cr, uid, partner_ids, context=None):
+        partners = self.pool.get('res.partner').browse(
+            cr, uid, list(partner_ids), context=context
+        )
+        ordered_partners = sorted(
+            partners,
+            key=lambda partner: (partner.create_date, partner.active),
+            reverse=True
+        )
+        return ordered_partners
+
 
     def _update_foreign_keys(self, cr, uid, src_partners, dst_partner,
                              context=None):
@@ -262,6 +316,25 @@ class MergePartnerWizard(osv.TransientModel):
                     query = """DELETE FROM %(table)s
                                WHERE %(column)s = %%s""" % query_dic
                     cr.execute(query, (partner_id,))
+
+    def get_fk_on(self, cr, table):
+        q = """  SELECT cl1.relname as table,
+                        att1.attname as column
+                   FROM pg_constraint as con, pg_class as cl1, pg_class as cl2,
+                        pg_attribute as att1, pg_attribute as att2
+                  WHERE con.conrelid = cl1.oid
+                    AND con.confrelid = cl2.oid
+                    AND array_lower(con.conkey, 1) = 1
+                    AND con.conkey[1] = att1.attnum
+                    AND att1.attrelid = cl1.oid
+                    AND cl2.relname = %s
+                    AND att2.attname = 'id'
+                    AND array_lower(con.confkey, 1) = 1
+                    AND con.confkey[1] = att2.attnum
+                    AND att2.attrelid = cl2.oid
+                    AND con.contype = 'f'
+        """
+        return cr.execute(q, (table,))
 
     def _update_reference_fields(self, cr, uid, src_partners, dst_partner,
                                  context=None):
@@ -384,93 +457,43 @@ class MergePartnerWizard(osv.TransientModel):
                     parent_id, dst_partner.id
                 )
 
-    @mute_logger('openerp.osv.expression', 'openerp.models')
-    def _merge(self, cr, uid, partner_ids, dst_partner=None, context=None):
-        """Merge seveal partners into just one.
 
-        :param partner_ids: Partners to merge.
-        :param dst_partner: Destination partner.
-        """
-        proxy = self.pool.get('res.partner')
+class MergePartnerWizard(osv.TransientModel):
+    """This wizard find potential partners to merge.
 
-        partner_ids = proxy.exists(cr, uid, list(partner_ids), context=context)
-        if len(partner_ids) < 2:
-            return
+    It uses to objects, the first is wizard it self for the end-user, and the
+    second will contain the partner list to merge.
 
-        is_superuser = uid == openerp.SUPERUSER_ID
+    """
 
-        if not is_superuser:
-            if len(partner_ids) > 3:
-                raise osv.except_osv(
-                    _('Error'),
-                    _("For safety reasons, you cannot merge more than 3 "
-                      "contacts together. You can re-open the wizard several "
-                      "times if needed.")
-                )
+    _name = str('base.partner.merge.wizard')
 
-            partners = proxy.browse(cr, uid, partner_ids, context=context)
-            if len(set(p.email for p in partners)) > 1:
-                raise osv.except_osv(
-                    _('Error'),
-                    _("All contacts must have the same email. Only the "
-                      "Administrator can merge contacts with different emails.")
-                )
+    _columns = {
+        # Filter by
+        'filter_by_name': fields.char('Name', required=False),
 
-        if dst_partner and dst_partner.id in partner_ids:
-            src_partners = proxy.browse(
-                cr, uid,
-                [id for id in partner_ids if id != dst_partner.id],
-                context=context
-            )
-        else:
-            ordered_partners = self._get_ordered_partner(
-                cr, uid, partner_ids, context)
-            dst_partner = ordered_partners[-1]
-            src_partners = ordered_partners[:-1]
-        _logger.info("dst_partner: %s", dst_partner.id)
+        # Search duplicates based on duplicated data in
+        'group_by_email': fields.boolean('Email'),
+        'group_by_name': fields.boolean('Name'),
+        'group_by_is_company': fields.boolean('Is Company'),
+        'group_by_vat': fields.boolean('VAT'),
+        'group_by_parent_id': fields.boolean('Parent Company'),
 
-        src_parters_has_account_move_lines = (
-            not is_superuser and
-            self._model_is_installed(
-                cr, uid, 'account.move.line', context=context) and
-            self.pool.get('account.move.line').search(
-                cr, openerp.SUPERUSER_ID,
-                [('partner_id', 'in', [p.id for p in src_partners])],
-                context=context)
-        )
-        if src_parters_has_account_move_lines:
-            raise osv.except_osv(
-                _('Error'),
-                _("Only the destination contact may be linked to existing "
-                  "Journal Items. Please ask the Administrator if you need to "
-                  "merge several contacts linked to existing Journal Items.")
-            )
+        # Exclude contacts having
+        'exclude_contact':
+            fields.boolean('A user associated to the contact'),
+        'exclude_journal_item':
+            fields.boolean('Journal Items associated to the contact'),
 
-        call_it = lambda function: function(cr, uid, src_partners, dst_partner,
-                                            context=context)
+        # Options
+        'maximum_group':
+            fields.integer("Maximum of Group of Contacts"),
+    }
 
-        call_it(self._update_foreign_keys)
-        call_it(self._update_reference_fields)
-        call_it(self._update_values)
-
-        _logger.info(
-            '(uid = %s) merged the partners %r with %s',
-            uid,
-            list(map(operator.attrgetter('id'), src_partners)),
-            dst_partner.id
-        )
-
-        name_emails = [(p.name, p.email or 'n/a', p.id) for p in src_partners]
-        name_emails = ', '.join('%s<%s>(ID %s)' % name for name in name_emails)
-        dst_partner.message_post(
-            body='%s %s' % (
-                _("Merged with the following partners:"),
-                name_emails
-            )
-        )
-
-        for partner in src_partners:
-            partner.unlink()
+    _defaults = {
+        'group_by_name': True,
+        'group_by_email': True,
+    }
 
     def close_cb(self, cr, uid, ids, context=None):
         return {'type': 'ir.actions.act_window_close'}
@@ -566,22 +589,6 @@ class MergePartnerWizard(osv.TransientModel):
 
         return groups
 
-    def _get_ordered_partner(self, cr, uid, partner_ids, context=None):
-        partners = self.pool.get('res.partner').browse(
-            cr, uid, list(partner_ids), context=context
-        )
-        ordered_partners = sorted(
-            partners,
-            key=lambda partner: (partner.create_date, partner.active),
-            reverse=True
-        )
-        return ordered_partners
-
-    def _model_is_installed(self, cr, uid, model, context=None):
-        proxy = self.pool.get('ir.model')
-        domain = [('model', '=', model)]
-        return proxy.search_count(cr, uid, domain, context=context) > 0
-
     def _partner_used_in(self, cr, uid, aggr_ids, models, context=None):
         """True if any partner in `aggr_ids` is associated to `model`."""
         models = models or {}
@@ -606,8 +613,8 @@ class MergePartnerWizard(osv.TransientModel):
         if this.exclude_contact:
             models['res.users'] = 'partner_id'
 
-        account_move_line_is_installed = self._model_is_installed(
-            cr, uid, 'account.move.line', context=context
+        account_move_line_is_installed = model_is_installed(
+            self.pool, cr, uid, 'account.move.line', context=context
         )
         if this.exclude_journal_item and account_move_line_is_installed:
             models['account.move.line'] = 'partner_id'
