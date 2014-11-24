@@ -21,6 +21,7 @@ from openerp.osv.orm import browse_record
 from openerp.tools.translate import _
 
 from xoeuf.osv import savepoint
+from xoeuf.osv.model_extensions import get_creator
 
 
 # from xoeuf.osv.model_extensions import field_value   # migrate
@@ -634,11 +635,13 @@ class MergePartnerWizard(osv.TransientModel):
                 else:
                     groups.append(found_ids)
 
-        from xoeuf.osv.model_extensions import get_creator
-
         for group in groups:
             with get_creator(proxy, cr, uid, context=context) as creator:
-                creator.update(wizard_id=this.id, partner_ids=group)
+                creator.update(
+                    wizard_id=this.id,
+                    dest_partner_id=min(group),
+                    partner_ids=group,
+                )
 
     def start_process_cb(self, cr, uid, ids, context=None):
         """Start the process.
