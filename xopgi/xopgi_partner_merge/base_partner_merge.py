@@ -85,17 +85,12 @@ class MergePartnerLine(osv.TransientModel):
     """
 
     def _get_name(self, cr, uid, ids, name, args=None, context=None):
-        res_partner = self.pool.get('res.partner')
-        groups = field_value(self, cr, uid, ids, 'partner_ids', context=context)
+        groups = field_value(
+            self, cr, uid, ids, 'dest_partner_id', context=context
+        )
         return {
-            id: field_value(
-                res_partner,
-                cr, uid,
-                partner_ids[0],
-                'name',
-                context=context
-            )
-            for id, partner_ids in groups.iteritems()
+            id: partner_name
+            for id, (partner_id, partner_name) in groups.iteritems()
         }
 
     _name = str('base.partner.merge.group')
