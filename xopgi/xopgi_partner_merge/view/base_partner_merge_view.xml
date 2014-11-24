@@ -76,6 +76,14 @@
             <field name='model'>base.partner.merge.group</field>
             <field name='arch' type='xml'>
                 <form string='Partner group' version="7.0">
+                    <header>
+                        <button
+                            name='merge'
+                            string='Merge'
+                            type='object'
+                            class='oe_highlight'
+                        />
+                    </header>
                     <group>
                         <field
                             name="dest_partner_id"
