@@ -71,7 +71,8 @@ class PartnerMergeInit(osv.TransientModel):
     def install_fuzzy_extension(self, cr, uid, context=None):
         try:
             cr.execute('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;')
-        except:
+        except Exception as error:
+            _logger.error("%s", error)
             raise osv.except_osv(
                 _('DB Server Error'),
                 _('A required DB extension was not found. '
