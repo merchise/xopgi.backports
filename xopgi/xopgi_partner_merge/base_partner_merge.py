@@ -70,6 +70,9 @@ class PartnerMergeInit(osv.TransientModel):
 
     def install_fuzzy_extension(self, cr, uid, context=None):
         try:
+            # TODO [eddy]: This is bound to fail if the user is not a
+            # super-user... Check with the PostgreSQL documentation for
+            # details.
             cr.execute('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;')
         except Exception as error:
             _logger.error("%s", error)
