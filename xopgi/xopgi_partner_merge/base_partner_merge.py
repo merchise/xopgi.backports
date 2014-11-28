@@ -72,10 +72,12 @@ class PartnerMergeInit(osv.TransientModel):
         try:
             cr.execute('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;')
         except:
-            raise osv.Error(_('DB Server Error'),
-                            _('A required DB extension was not found. '
-                              'Ask your administrator to install '
-                              '"postgresql-contrib" package.'))
+            raise osv.except_osv(
+                _('DB Server Error'),
+                _('A required DB extension was not found. '
+                  'Ask your administrator to install '
+                  '"postgresql-contrib" package.')
+            )
 
 
 class ResPartner(osv.Model):
