@@ -162,14 +162,6 @@ class MergePartnerLine(osv.TransientModel):
                       "times if needed.")
                 )
 
-            partners = proxy.browse(cr, uid, partner_ids, context=context)
-            if len(set(p.email for p in partners)) > 1:
-                raise osv.except_osv(
-                    _('Error'),
-                    _("All contacts must have the same email. Only the "
-                      "Administrator can merge contacts with different emails.")
-                )
-
         if dst_partner and dst_partner.id in partner_ids:
             src_partners = proxy.browse(
                 cr, uid,
