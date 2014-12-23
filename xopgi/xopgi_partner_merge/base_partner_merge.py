@@ -11,10 +11,11 @@ import functools
 import itertools
 import logging
 import operator
+
 import psycopg2
-from openerp.tools import mute_logger
 
 import openerp
+from openerp.tools import mute_logger
 from openerp.osv import osv, orm
 from openerp.osv import fields
 from openerp.osv.orm import browse_record
