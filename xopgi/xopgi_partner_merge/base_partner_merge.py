@@ -12,6 +12,8 @@ import itertools
 import logging
 import operator
 
+from xoutil.objects import get_first_of
+
 import psycopg2
 
 import openerp
@@ -134,6 +136,22 @@ class MergePartnerGroup(osv.TransientModel):
     }
 
     _order = 'name asc'
+
+    def default_get(self, cr, uid, fields, context=None):
+        result = super(MergePartnerGroup, self).default_get(
+            cr, uid, fields, context=context
+        )
+        result['dest_partner_id'] = get_first_of(
+            [context, result],
+            'dest_partner_id',
+            default=False
+        )
+        result['partner_ids'] = get_first_of(
+            [context, result],
+            'partner_ids',
+            default=False
+        )
+        return result
 
     def merge(self, cr, uid, ids, context=None):
         assert is_integer_list(ids)
