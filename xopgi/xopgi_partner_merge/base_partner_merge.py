@@ -182,7 +182,12 @@ class MergePartnerGroup(osv.TransientModel):
                 )
 
             partners = proxy.browse(cr, uid, partner_ids, context=context)
-            if len({p.email for p in partners if p.email.strip()}) > 1:
+            partner_different_emails = {
+                p.email
+                for p in partners
+                if p.email and p.email.strip()
+            }
+            if len(partner_different_emails) > 1:
                 raise osv.except_osv(
                     _('Error'),
                     _("All contacts must have the same email. Only the "
