@@ -215,7 +215,8 @@ class MergePartnerGroup(osv.TransientModel):
             self.pool.get('account.move.line').search(
                 cr, openerp.SUPERUSER_ID,
                 [('partner_id', 'in', [p.id for p in src_partners])],
-                context=context)
+                context=context
+            )
         )
         if src_parters_has_account_move_lines:
             raise osv.except_osv(
@@ -261,7 +262,6 @@ class MergePartnerGroup(osv.TransientModel):
             reverse=True
         )
         return ordered_partners
-
 
     def _update_foreign_keys(self, cr, uid, src_partners, dst_partner,
                              context=None):
