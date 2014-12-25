@@ -698,10 +698,15 @@ class MergePartnerWizard(osv.TransientModel):
             maximum_group=this.maximum_group,
         )
         self._process_query(cr, uid, ids, query, context=context)
+
+        name = _('Deduplicate contacts')
+        if this.filter_by_name:
+            name += _(' filtered by "%s"') % this.filter_by_name
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'base.partner.merge.group',
             'domain': [('wizard_id', '=', this.id)],
+            'name': name,
             'view_type': 'form',
             'view_mode': 'tree,form',
         }
