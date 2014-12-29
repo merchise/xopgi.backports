@@ -107,11 +107,14 @@
 
         <act_window
             id="action_partner_merge"
-            res_model="base.partner.merge.wizard"
+            res_model="base.partner.merge.group"
             src_model="res.partner"
-            target="new"
             multi="True"
             key2="client_action_multi"
+            context="{
+                'dest_partner_id': active_id,
+                'partner_ids': active_ids
+            }"
             view_mode="form"
             name="Merge"
         />

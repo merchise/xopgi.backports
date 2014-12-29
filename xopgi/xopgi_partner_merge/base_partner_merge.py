@@ -11,10 +11,13 @@ import functools
 import itertools
 import logging
 import operator
+
+from xoutil.objects import get_first_of
+
 import psycopg2
-from openerp.tools import mute_logger
 
 import openerp
+from openerp.tools import mute_logger
 from openerp.osv import osv, orm
 from openerp.osv import fields
 from openerp.osv.orm import browse_record
@@ -89,7 +92,7 @@ class ResPartner(osv.Model):
     }
 
 
-class MergePartnerLine(osv.TransientModel):
+class MergePartnerGroup(osv.TransientModel):
     """Represent a partner o a parter group.
 
     - Is a partner when `parent_id` points to another instance of the same
@@ -138,6 +141,22 @@ class MergePartnerLine(osv.TransientModel):
 
     _order = 'name asc'
 
+    def default_get(self, cr, uid, fields, context=None):
+        result = super(MergePartnerGroup, self).default_get(
+            cr, uid, fields, context=context
+        )
+        result['dest_partner_id'] = get_first_of(
+            [context, result],
+            'dest_partner_id',
+            default=False
+        )
+        result['partner_ids'] = get_first_of(
+            [context, result],
+            'partner_ids',
+            default=False
+        )
+        return result
+
     def merge(self, cr, uid, ids, context=None):
         assert is_integer_list(ids)
 
@@ -167,7 +186,12 @@ class MergePartnerLine(osv.TransientModel):
                 )
 
             partners = proxy.browse(cr, uid, partner_ids, context=context)
-            if len(set(p.email for p in partners)) > 1:
+            partner_different_emails = {
+                p.email
+                for p in partners
+                if p.email and p.email.strip()
+            }
+            if len(partner_different_emails) > 1:
                 raise osv.except_osv(
                     _('Error'),
                     _("All contacts must have the same email. Only the "
@@ -195,7 +219,8 @@ class MergePartnerLine(osv.TransientModel):
             self.pool.get('account.move.line').search(
                 cr, openerp.SUPERUSER_ID,
                 [('partner_id', 'in', [p.id for p in src_partners])],
-                context=context)
+                context=context
+            )
         )
         if src_parters_has_account_move_lines:
             raise osv.except_osv(
@@ -241,7 +266,6 @@ class MergePartnerLine(osv.TransientModel):
             reverse=True
         )
         return ordered_partners
-
 
     def _update_foreign_keys(self, cr, uid, src_partners, dst_partner,
                              context=None):
@@ -678,10 +702,15 @@ class MergePartnerWizard(osv.TransientModel):
             maximum_group=this.maximum_group,
         )
         self._process_query(cr, uid, ids, query, context=context)
+
+        name = _('Deduplicate contacts')
+        if this.filter_by_name:
+            name += _(' filtered by "%s"') % this.filter_by_name
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'base.partner.merge.group',
             'domain': [('wizard_id', '=', this.id)],
+            'name': name,
             'view_type': 'form',
             'view_mode': 'tree,form',
         }
