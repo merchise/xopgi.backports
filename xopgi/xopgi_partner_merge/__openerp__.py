@@ -27,6 +27,7 @@
     ],
     "update_xml": [
         'view/base_partner_merge_view.xml',
+        'security/base_partner_merge.xml',
     ],
     "demo_xml": [],
     "css": [],
