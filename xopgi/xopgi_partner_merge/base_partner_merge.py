@@ -170,9 +170,18 @@ class MergePartnerGroup(osv.TransientModel):
         if len(partner_ids) < 2:
             return
 
-        is_superuser = uid == openerp.SUPERUSER_ID
+        merger_partner_permission = self.pool['res.groups'].search(
+            cr, uid, [('name', '=', 'Partner merger')], context=context
+        )[0]
+        user_groups = field_value(
+            self.pool.get('res.users'), cr, uid, uid, 'groups_id'
+        )
 
-        if not is_superuser:
+        has_merge_permission = merger_partner_permission in user_groups
+        is_superuser = uid == openerp.SUPERUSER_ID
+        has_permission = is_superuser or has_merge_permission
+
+        if not has_permission:  # permiso de mezclador
             if len(partner_ids) > 3:
                 raise osv.except_osv(
                     _('Error'),
@@ -208,7 +217,7 @@ class MergePartnerGroup(osv.TransientModel):
         _logger.info("dst_partner: %s", dst_partner.id)
 
         src_parters_has_account_move_lines = (
-            not is_superuser and
+            not has_permission and
             model_is_installed(
                 self.pool, cr, uid, 'account.move.line', context=context
             ) and
