@@ -27,7 +27,11 @@ from xoeuf.osv import savepoint
 from xoeuf.osv.model_extensions import get_creator
 
 
-# from xoeuf.osv.model_extensions import field_value   # migrate
+# from xoeuf.osv.model_extensions import field_value # migrate
+
+
+# TODO: [eddy] {review} How this is different from our current field_value
+# implementation.
 
 
 def field_value(model, cr, uid, ids, field_name, *args, **kwargs):
