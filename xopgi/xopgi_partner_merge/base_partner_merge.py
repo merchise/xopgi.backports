@@ -185,7 +185,7 @@ class MergePartnerGroup(osv.TransientModel):
         is_superuser = uid == openerp.SUPERUSER_ID
         has_permission = is_superuser or has_merge_permission
 
-        if not has_permission:  # permiso de mezclador
+        if not has_permission:
             if len(partner_ids) > 3:
                 raise osv.except_osv(
                     _('Error'),
