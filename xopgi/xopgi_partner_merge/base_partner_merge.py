@@ -37,7 +37,8 @@ from xoeuf.osv.model_extensions import get_creator
 def field_value(model, cr, uid, ids, field_name, *args, **kwargs):
     """Read a field value from a set of objects.
 
-    :return: a dictionary mapping ids -> field value
+    :return: a dict mapping ids -> field value, if there are several results
+             the object dict, if there is only one result
 
     :rtype: dict
 
