@@ -22,12 +22,12 @@
     "category": "Hidden",
     "description": "General fixes.",
     "depends": ['base', 'crm'],
-    "init_xml": [
+    "data": [
         'init/metaphone.xml',
-    ],
-    "update_xml": [
-        'view/base_partner_merge_view.xml',
-        'security/base_partner_merge.xml',
+        'view/base_partner_merge_view.xml'
+            if ODOO_VERSION_INFO < (8, 0) else 'dummy.xml',
+        'security/base_partner_merge.xml'
+            if ODOO_VERSION_INFO < (8, 0) else 'dummy.xml',
     ],
     "demo_xml": [],
     "css": [],
