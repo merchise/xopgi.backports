@@ -5,7 +5,7 @@
         <menuitem id='root_menu' name='Tools' parent='base.menu_base_partner' sequence="25"/>
 
         <record model="ir.actions.act_window" id="xopgi_partner_merge_act">
-            <field name="name">Deduplicate Contacts</field>
+            <field name="name">Deduplicate contacts</field>
             <field name="res_model">xopgi.partner.merge.wizard</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
