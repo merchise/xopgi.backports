@@ -24,10 +24,8 @@
     "depends": ['base', 'crm'],
     "data": [
         'init/metaphone.xml',
-        'view/base_partner_merge_view.xml'
-            if ODOO_VERSION_INFO < (8, 0) else 'dummy.xml',
-        'security/base_partner_merge.xml'
-            if ODOO_VERSION_INFO < (8, 0) else 'dummy.xml',
+        'view/base_partner_merge_view.xml',
+        'security/base_partner_merge.xml',
     ],
     "demo_xml": [],
     "css": [],
