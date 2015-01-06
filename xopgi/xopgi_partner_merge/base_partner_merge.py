@@ -66,7 +66,7 @@ def model_is_installed(pool, cr, uid, model, context=None):
 
 
 class PartnerMergeInit(osv.TransientModel):
-    _name = str('base.partner.merge.initialize')
+    _name = 'base.partner.merge.initialize'
 
     def install_fuzzy_extension(self, cr, uid, context=None):
         try:
@@ -85,7 +85,7 @@ class PartnerMergeInit(osv.TransientModel):
 
 
 class ResPartner(osv.Model):
-    _inherit = str('res.partner')
+    _inherit = 'res.partner'
 
     _columns = {
         'id': fields.integer('Id', readonly=True),
@@ -113,7 +113,7 @@ class MergePartnerGroup(osv.TransientModel):
             for id, (partner_id, partner_name) in groups.iteritems()
         }
 
-    _name = str('base.partner.merge.group')
+    _name = 'base.partner.merge.group'
 
     _columns = {
         'wizard_id': fields.many2one(
@@ -509,7 +509,7 @@ class MergePartnerWizard(osv.TransientModel):
 
     """
 
-    _name = str('base.partner.merge.wizard')
+    _name = 'base.partner.merge.wizard'
 
     _columns = {
         # Filter by
