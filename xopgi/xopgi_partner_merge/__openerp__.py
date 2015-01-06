@@ -24,8 +24,8 @@
     "depends": ['base', 'crm'],
     "data": [
         'init/metaphone.xml',
-        'view/base_partner_merge_view.xml',
-        'security/base_partner_merge.xml',
+        'view/xopgi_partner_merge_view.xml',
+        'security/xopgi_partner_merge.xml',
     ],
     "demo_xml": [],
     "css": [],
