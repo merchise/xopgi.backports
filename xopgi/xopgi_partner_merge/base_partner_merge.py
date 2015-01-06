@@ -52,7 +52,7 @@ def field_value(model, cr, uid, ids, field_name, *args, **kwargs):
         return {r['id']: r.get(field_name) for r in result}
 
 
-_logger = logging.getLogger('base.partner.merge')
+_logger = logging.getLogger('xopgi.partner.merge')
 
 
 def is_integer_list(ids):
@@ -66,7 +66,7 @@ def model_is_installed(pool, cr, uid, model, context=None):
 
 
 class PartnerMergeInit(osv.TransientModel):
-    _name = 'base.partner.merge.initialize'
+    _name = 'xopgi.partner.merge.initialize'
 
     def install_fuzzy_extension(self, cr, uid, context=None):
         try:
@@ -113,11 +113,11 @@ class MergePartnerGroup(osv.TransientModel):
             for id, (partner_id, partner_name) in groups.iteritems()
         }
 
-    _name = 'base.partner.merge.group'
+    _name = 'xopgi.partner.merge.group'
 
     _columns = {
         'wizard_id': fields.many2one(
-            'base.partner.merge.wizard',
+            'xopgi.partner.merge.wizard',
             string=_('Wizard'),
         ),
         'dest_partner_id': fields.many2one(
@@ -126,7 +126,7 @@ class MergePartnerGroup(osv.TransientModel):
         ),
         'partner_ids': fields.many2many(
             'res.partner',
-            rel='base_partner_merge_group_partners',
+            rel='xopgi_partner_merge_group_partners',
             id1='category_id',
             id2='partner_id',
             string='Partners'
@@ -292,7 +292,7 @@ class MergePartnerGroup(osv.TransientModel):
         # ignore two tables
 
         for table, column in cr.fetchall():
-            if 'base_partner_merge_' in table:
+            if 'xopgi_partner_merge_' in table:
                 continue
             partner_ids = tuple(map(int, src_partners))
 
@@ -509,7 +509,7 @@ class MergePartnerWizard(osv.TransientModel):
 
     """
 
-    _name = 'base.partner.merge.wizard'
+    _name = 'xopgi.partner.merge.wizard'
 
     _columns = {
         # Filter by
@@ -666,7 +666,7 @@ class MergePartnerWizard(osv.TransientModel):
 
     def _process_query(self, cr, uid, ids, query, context=None):
         """Execute the select request and write the results."""
-        proxy = self.pool.get('base.partner.merge.group')
+        proxy = self.pool.get('xopgi.partner.merge.group')
         this = self.browse(cr, uid, ids[0], context=context)
         models = self.compute_models(cr, uid, ids, context=context)
         cr.execute(query)
@@ -718,7 +718,7 @@ class MergePartnerWizard(osv.TransientModel):
             name += _(' filtered by "%s"') % this.filter_by_name
         return {
             'type': 'ir.actions.act_window',
-            'res_model': 'base.partner.merge.group',
+            'res_model': 'xopgi.partner.merge.group',
             'domain': [('wizard_id', '=', this.id)],
             'name': name,
             'view_type': 'form',

@@ -4,9 +4,9 @@
         <!-- the sequence of the configuration sub menu is 30 -->
         <menuitem id='root_menu' name='Tools' parent='base.menu_base_partner' sequence="25"/>
 
-        <record model="ir.actions.act_window" id="base_partner_merge_act">
+        <record model="ir.actions.act_window" id="xopgi_partner_merge_act">
             <field name="name">Deduplicate Contacts</field>
-            <field name="res_model">base.partner.merge.wizard</field>
+            <field name="res_model">xopgi.partner.merge.wizard</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
             <field name="target">new</field>
@@ -14,13 +14,13 @@
         </record>
 
         <menuitem id='partner_merge_menu'
-            action='base_partner_merge_act'
+            action='xopgi_partner_merge_act'
             groups='base.group_system'
             parent='root_menu' />
 
-        <record model='ir.ui.view' id='base_partner_merge_wizard_form'>
-            <field name='name'>base.partner.merge.wizard.form</field>
-            <field name='model'>base.partner.merge.wizard</field>
+        <record model='ir.ui.view' id='xopgi_partner_merge_wizard_form'>
+            <field name='name'>xopgi.partner.merge.wizard.form</field>
+            <field name='model'>xopgi.partner.merge.wizard</field>
             <field name='arch' type='xml'>
                 <form string='Merge Wizard' version="7.0">
                     <header>
@@ -71,9 +71,9 @@
             </field>
         </record>
 
-        <record model='ir.ui.view' id='base_partner_merge_group_form'>
-            <field name='name'>base.partner.merge.group.form</field>
-            <field name='model'>base.partner.merge.group</field>
+        <record model='ir.ui.view' id='xopgi_partner_merge_group_form'>
+            <field name='name'>xopgi.partner.merge.group.form</field>
+            <field name='model'>xopgi.partner.merge.group</field>
             <field name='arch' type='xml'>
                 <form string='Partner group' version="7.0">
                     <header>
@@ -107,7 +107,7 @@
 
         <act_window
             id="action_partner_merge"
-            res_model="base.partner.merge.group"
+            res_model="xopgi.partner.merge.group"
             src_model="res.partner"
             multi="True"
             key2="client_action_multi"
