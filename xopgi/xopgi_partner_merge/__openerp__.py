@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-#----------------------------------------------------------------------
+# ---------------------------------------------------------------------
 # xopgi.backports
-#----------------------------------------------------------------------
-# Copyright (c) 2013, 2014 Merchise Autrement
+# ---------------------------------------------------------------------
+# Copyright (c) 2014, 2015 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -22,11 +22,10 @@
     "category": "Hidden",
     "description": "General fixes.",
     "depends": ['base', 'crm'],
-    "init_xml": [
+    "data": [
         'init/metaphone.xml',
-    ],
-    "update_xml": [
-        'view/base_partner_merge_view.xml',
+        'view/xopgi_partner_merge_view.xml',
+        'security/xopgi_partner_merge.xml',
     ],
     "demo_xml": [],
     "css": [],
