@@ -165,6 +165,8 @@ class MergePartnerGroup(osv.TransientModel):
         this = self.browse(cr, uid, ids[0], context=context)
         partner_ids = set(map(int, this.partner_ids))
         self._merge(cr, uid, partner_ids, this.dest_partner_id, context=context)
+        self._check_on_alias_defaults(cr, this.dest_partner_id,
+                                      partner_ids, context=context)
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
     def _merge(self, cr, uid, partner_ids, dst_partner=None, context=None):
@@ -499,6 +501,44 @@ class MergePartnerGroup(osv.TransientModel):
                     'of partner: %s',
                     parent_id, dst_partner.id
                 )
+
+
+    def _check_on_alias_defaults(self, cr, dst_partner_id,
+                                 partner_ids, context=None):
+        """Check if any of merged partner_ids are referenced on any mail.alias
+        and on this case update the references to the destination
+        dst_partner_id.
+        """
+        query = """SELECT id, alias_defaults FROM mail_alias
+                     WHERE alias_model_id = {model}
+                     AND (alias_defaults LIKE '%''{field}''%')"""
+        cr.execute(
+            "SELECT name, model, model_id, ttype FROM ir_model_fields "
+            "WHERE relation='res.partner';")
+        read = cr.fetchall()
+        for field, model, model_id, ttype in read:
+            pool = self.pool[model]
+            if hasattr(pool, '_columns'):
+                col = pool._columns[field]
+                if isinstance(col, fields.many2one):
+                    cr.execute(query.format(model=model_id,
+                                            field=field))
+                    for alias, defaults in cr.fetchall():
+                        try:
+                            defaults = dict(eval(defaults))
+                            val = defaults[field]
+                            if val in partner_ids and val != dst_partner_id:
+                                defaults[field] = dst_partner_id
+                                upd = self.pool[
+                                    'mail.alias'].write
+                                vals = {'alias_defaults': str(defaults)}
+                                upd(cr, openerp.SUPERUSER_ID, alias, vals,
+                                    context=context)
+                        except Exception:
+                            pass
+                            # TODO: tambien hay que darle tratamiento a los one2many y
+                            # many2many
+        return True
 
 
 class MergePartnerWizard(osv.TransientModel):
