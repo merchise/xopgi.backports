@@ -28,12 +28,9 @@
     "category": "Hidden",
     "description": "General fixes.",
     "depends": ['base', ],
-    "init_xml": [],
-    "update_xml": [
+    "data": [
         'view/config.xml',
     ],
-    "demo_xml": [],
-    "css": [],
     "application": False,
     "installable": True,
     'auto_install': True,
