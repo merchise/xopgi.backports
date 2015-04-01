@@ -165,6 +165,7 @@ class MergePartnerGroup(osv.TransientModel):
         this = self.browse(cr, uid, ids[0], context=context)
         partner_ids = set(map(int, this.partner_ids))
         self._merge(cr, uid, partner_ids, this.dest_partner_id, context=context)
+        cr.commit()  # init a new transaction
         self._check_on_alias_defaults(cr, uid, this.dest_partner_id,
                                       partner_ids, context=context)
 
