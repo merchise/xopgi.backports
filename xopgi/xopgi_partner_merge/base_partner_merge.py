@@ -168,6 +168,8 @@ class MergePartnerGroup(osv.TransientModel):
         cr.commit()  # init a new transaction
         self._check_on_alias_defaults(cr, uid, this.dest_partner_id,
                                       partner_ids, context=context)
+        cr.commit()  # init a new transaction
+        self._remove_duplicated_mail_followers(cr, this.dest_partner_id.id)
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
     def _merge(self, cr, uid, partner_ids, dst_partner=None, context=None):
@@ -553,6 +555,35 @@ class MergePartnerGroup(osv.TransientModel):
                     if val != res_val:
                         defaults_dict[field] = res_val
                         _update_alias(alias_id, defaults_dict)
+        return True
+
+    def _remove_duplicated_mail_followers(self, cr, dst_partner_id):
+        """Delete all duplicated mail_followers with
+        partner_id = dst_partner_id and create one by each group.
+        """
+        select_query = """
+          SELECT res_id, res_model, partner_id
+          FROM (SELECT COUNT(id) quantity, res_id, res_model, partner_id
+                FROM mail_followers WHERE partner_id = %s
+                GROUP BY res_id, res_model, partner_id) grouped_table
+          WHERE quantity>1"""
+        cr.execute(select_query % dst_partner_id)
+        read = cr.fetchall()
+        if not read:
+            return True
+        del_query = """
+          DELETE FROM mail_followers
+          WHERE res_id={res_id} AND res_model='{res_model}' AND partner_id={partner_id}
+          """
+        insert_query = """
+          INSERT INTO mail_followers(res_id, res_model, partner_id)
+          VALUES ({res_id}, '{res_model}', {partner_id})
+        """
+        for res_id, res_model, partner_id in read:
+            cr.execute(del_query.format(res_id=res_id, res_model=res_model,
+                                        partner_id=dst_partner_id))
+            cr.execute(insert_query.format(res_id=res_id, res_model=res_model,
+                                           partner_id=dst_partner_id))
         return True
 
 
