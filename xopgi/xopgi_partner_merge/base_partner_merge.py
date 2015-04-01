@@ -165,7 +165,7 @@ class MergePartnerGroup(osv.TransientModel):
         this = self.browse(cr, uid, ids[0], context=context)
         partner_ids = set(map(int, this.partner_ids))
         self._merge(cr, uid, partner_ids, this.dest_partner_id, context=context)
-        self._check_on_alias_defaults(cr, this.dest_partner_id,
+        self._check_on_alias_defaults(cr, uid, this.dest_partner_id,
                                       partner_ids, context=context)
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
@@ -502,42 +502,56 @@ class MergePartnerGroup(osv.TransientModel):
                     parent_id, dst_partner.id
                 )
 
-
-    def _check_on_alias_defaults(self, cr, dst_partner_id,
-                                 partner_ids, context=None):
+    def _check_on_alias_defaults(self, cr, uid, dst_partner_id, partner_ids,
+                                 context=None):
         """Check if any of merged partner_ids are referenced on any mail.alias
-        and on this case update the references to the destination
-        dst_partner_id.
+        and on this case update the references to the dst_partner_id.
         """
+        alias_upd = self.pool['mail.alias'].write
+        _update_alias = lambda _id, alias_defaults: alias_upd(
+            cr,
+            openerp.SUPERUSER_ID,
+            _id,
+            {'alias_defaults': str(alias_defaults)},
+            context=context
+        )
         query = """SELECT id, alias_defaults FROM mail_alias
                      WHERE alias_model_id = {model}
                      AND (alias_defaults LIKE '%''{field}''%')"""
         cr.execute(
-            "SELECT name, model, model_id, ttype FROM ir_model_fields "
-            "WHERE relation='res.partner';")
+            "SELECT name, model_id, ttype FROM ir_model_fields "
+            "WHERE relation='res.partner';"
+        )
         read = cr.fetchall()
-        for field, model, model_id, ttype in read:
-            pool = self.pool[model]
-            if hasattr(pool, '_columns'):
-                col = pool._columns[field]
-                if isinstance(col, fields.many2one):
-                    cr.execute(query.format(model=model_id,
-                                            field=field))
-                    for alias, defaults in cr.fetchall():
-                        try:
-                            defaults = dict(eval(defaults))
-                            val = defaults[field]
-                            if val in partner_ids and val != dst_partner_id:
-                                defaults[field] = dst_partner_id
-                                upd = self.pool[
-                                    'mail.alias'].write
-                                vals = {'alias_defaults': str(defaults)}
-                                upd(cr, openerp.SUPERUSER_ID, alias, vals,
-                                    context=context)
-                        except Exception:
-                            pass
-                            # TODO: tambien hay que darle tratamiento a los one2many y
-                            # many2many
+        for field, model_id, ttype in read:
+            cr.execute(query.format(model=model_id, field=field))
+            for alias_id, defaults in cr.fetchall():
+                try:
+                    defaults_dict = dict(eval(defaults))
+                except Exception:
+                    defaults_dict = {}
+                val = defaults_dict.get(field, False)
+                if not val:
+                    continue
+                if ttype == 'many2one':
+                    if val in partner_ids and val != dst_partner_id:
+                        defaults_dict[field] = dst_partner_id
+                        _update_alias(alias_id, defaults_dict)
+                else:
+                    res_val = []
+                    for rel_item in val:
+                        rel_ids = rel_item[-1]
+                        if isinstance(rel_ids, (tuple, list)):
+                            wo_partner_ids = [i for i in rel_ids
+                                              if i not in partner_ids]
+                            if wo_partner_ids != rel_ids:
+                                rel_ids = set(wo_partner_ids + [dst_partner_id])
+                        elif rel_ids in partner_ids and val != dst_partner_id:
+                            rel_ids = dst_partner_id
+                        res_val.append(tuple(rel_item[:-1]) + (rel_ids,))
+                    if val != res_val:
+                        defaults_dict[field] = res_val
+                        _update_alias(alias_id, defaults_dict)
         return True
 
 
