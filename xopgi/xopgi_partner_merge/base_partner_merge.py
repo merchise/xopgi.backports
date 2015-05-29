@@ -446,12 +446,13 @@ class MergePartnerGroup(osv.TransientModel):
         for record in records:
             try:
                 proxy_model = self.pool[record.model]
-                field_type = proxy_model._columns[record.name].__class__._type
+                column = proxy_model._columns[record.name]
             except KeyError:
                 # unknown model or field => skip
                 continue
 
-            if field_type == 'function':
+            if not column or (isinstance(column, fields.function) and
+                              not column.store):
                 continue
 
             for partner in src_partners:
