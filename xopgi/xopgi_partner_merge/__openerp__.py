@@ -15,7 +15,7 @@
 {
     "name": "ERP backports, Partner Merge",
 
-    "version": "2014.11.12",
+    "version": "2015.06.01",
 
     "author": "Merchise Autrement",
     "website": "http://www.merchise.org/addons/xopgi_backports/partner_merge",

@@ -21,7 +21,7 @@
 
     # Warning:  This addon should only contain res_config items.
 
-    "version": "2014.11.14",
+    "version": "2015.06.01",
 
     "author": "Merchise Autrement",
     "website": "http://www.merchise.org/addons/xopgi_backports",
