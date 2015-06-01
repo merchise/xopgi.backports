@@ -165,6 +165,11 @@ class MergePartnerGroup(osv.TransientModel):
         this = self.browse(cr, uid, ids[0], context=context)
         partner_ids = set(map(int, this.partner_ids))
         self._merge(cr, uid, partner_ids, this.dest_partner_id, context=context)
+        cr.commit()  # init a new transaction
+        self._check_on_alias_defaults(cr, uid, this.dest_partner_id,
+                                      partner_ids, context=context)
+        cr.commit()  # init a new transaction
+        self._remove_duplicated_mail_followers(cr, this.dest_partner_id.id)
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
     def _merge(self, cr, uid, partner_ids, dst_partner=None, context=None):
@@ -441,12 +446,13 @@ class MergePartnerGroup(osv.TransientModel):
         for record in records:
             try:
                 proxy_model = self.pool[record.model]
-                field_type = proxy_model._columns[record.name].__class__._type
+                column = proxy_model._columns[record.name]
             except KeyError:
                 # unknown model or field => skip
                 continue
 
-            if field_type == 'function':
+            if not column or (isinstance(column, fields.function) and
+                              not column.store):
                 continue
 
             for partner in src_partners:
@@ -499,6 +505,87 @@ class MergePartnerGroup(osv.TransientModel):
                     'of partner: %s',
                     parent_id, dst_partner.id
                 )
+
+    def _check_on_alias_defaults(self, cr, uid, dst_partner_id, partner_ids,
+                                 context=None):
+        """Check if any of merged partner_ids are referenced on any mail.alias
+        and on this case update the references to the dst_partner_id.
+        """
+        alias_upd = self.pool['mail.alias'].write
+        _update_alias = lambda _id, alias_defaults: alias_upd(
+            cr,
+            openerp.SUPERUSER_ID,
+            _id,
+            {'alias_defaults': str(alias_defaults)},
+            context=context
+        )
+        query = """SELECT id, alias_defaults FROM mail_alias
+                     WHERE alias_model_id = {model}
+                     AND (alias_defaults LIKE '%''{field}''%')"""
+        cr.execute(
+            "SELECT name, model_id, ttype FROM ir_model_fields "
+            "WHERE relation='res.partner';"
+        )
+        read = cr.fetchall()
+        for field, model_id, ttype in read:
+            cr.execute(query.format(model=model_id, field=field))
+            for alias_id, defaults in cr.fetchall():
+                try:
+                    defaults_dict = dict(eval(defaults))
+                except Exception:
+                    defaults_dict = {}
+                val = defaults_dict.get(field, False)
+                if not val:
+                    continue
+                if ttype == 'many2one':
+                    if val in partner_ids and val != dst_partner_id:
+                        defaults_dict[field] = dst_partner_id
+                        _update_alias(alias_id, defaults_dict)
+                else:
+                    res_val = []
+                    for rel_item in val:
+                        rel_ids = rel_item[-1]
+                        if isinstance(rel_ids, (tuple, list)):
+                            wo_partner_ids = [i for i in rel_ids
+                                              if i not in partner_ids]
+                            if wo_partner_ids != rel_ids:
+                                rel_ids = set(wo_partner_ids + [dst_partner_id])
+                        elif rel_ids in partner_ids and val != dst_partner_id:
+                            rel_ids = dst_partner_id
+                        res_val.append(tuple(rel_item[:-1]) + (rel_ids,))
+                    if val != res_val:
+                        defaults_dict[field] = res_val
+                        _update_alias(alias_id, defaults_dict)
+        return True
+
+    def _remove_duplicated_mail_followers(self, cr, dst_partner_id):
+        """Delete all duplicated mail_followers with
+        partner_id = dst_partner_id and create one by each group.
+        """
+        select_query = """
+          SELECT res_id, res_model, partner_id
+          FROM (SELECT COUNT(id) quantity, res_id, res_model, partner_id
+                FROM mail_followers WHERE partner_id = %s
+                GROUP BY res_id, res_model, partner_id) grouped_table
+          WHERE quantity>1"""
+        cr.execute(select_query % dst_partner_id)
+        read = cr.fetchall()
+        if not read:
+            return True
+        del_query = """
+          DELETE FROM mail_followers
+          WHERE res_id={res_id} AND res_model='{res_model}' AND partner_id={partner_id}
+          """
+        insert_query = """
+          INSERT INTO mail_followers(res_id, res_model, partner_id)
+          VALUES ({res_id}, '{res_model}', {partner_id})
+        """
+        for res_id, res_model, partner_id in read:
+            cr.execute(del_query.format(res_id=res_id, res_model=res_model,
+                                        partner_id=dst_partner_id))
+            cr.execute(insert_query.format(res_id=res_id, res_model=res_model,
+                                           partner_id=dst_partner_id))
+        return True
 
 
 class MergePartnerWizard(osv.TransientModel):

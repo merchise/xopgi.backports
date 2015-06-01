@@ -21,19 +21,16 @@
 
     # Warning:  This addon should only contain res_config items.
 
-    "version": "2014.11.14",
+    "version": "2015.06.01",
 
     "author": "Merchise Autrement",
     "website": "http://www.merchise.org/addons/xopgi_backports",
     "category": "Hidden",
     "description": "General fixes.",
     "depends": ['base', ],
-    "init_xml": [],
-    "update_xml": [
+    "data": [
         'view/config.xml',
     ],
-    "demo_xml": [],
-    "css": [],
     "application": False,
     "installable": True,
     'auto_install': True,
