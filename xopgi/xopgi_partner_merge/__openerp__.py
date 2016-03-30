@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------
 # xopgi.backports
 # ---------------------------------------------------------------------
-# Copyright (c) 2014, 2015 Merchise Autrement
+# Copyright (c) 2014-2016 Merchise Autrement
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -30,6 +30,10 @@
     "demo_xml": [],
     "css": [],
     "application": False,
-    "installable": True,
+
+    # MIGRATION POLICY: All addons are not included until someone work on them
+    # and upgrade them.
+    'installable': (8, 0) <= ODOO_VERSION_INFO < (9, 0),   # noqa
+
     'auto_install': False,
 }
