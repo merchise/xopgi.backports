@@ -3,7 +3,7 @@
 # ---------------------------------------------------------------------
 # xopgi.backports._release
 # ---------------------------------------------------------------------
-# Copyright (c) 2014, 2015 Merchise Autrement and Contributors
+# Copyright (c) 2014, 2015, 2016 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
@@ -15,12 +15,13 @@
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
-                        unicode_literals as _py3_unicode,
                         absolute_import as _py3_abs_imports)
+
 
 def read_terpfile():
     import os
-    with open(os.path.join(os.path.dirname(__file__), '__openerp__.py'), 'rU') as fh:
+    from os.path import join
+    with open(join(os.path.dirname(__file__), '__openerp__.py'), 'rU') as fh:
         content = fh.read()
         # Odoo version doesn't really matter here.  But we need to provide a
         # fake one for the `eval` to succeed.
