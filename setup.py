@@ -1,5 +1,6 @@
 #!python
 # -*- encoding: utf-8 -*-
+# flake8: noqa
 from __future__ import absolute_import, print_function
 
 import os, sys
@@ -40,7 +41,7 @@ setup(name=project_name,
           'Programming Language :: Python',
       ],
       keywords='',
-      author='Merchise Autrement and Contributors',
+      author='Merchise Autrement [~º/~] and Contributors',
       license='GPLv3+',
       packages=find_packages(),
       include_package_data=True,
