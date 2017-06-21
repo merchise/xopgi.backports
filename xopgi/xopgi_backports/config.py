@@ -16,16 +16,15 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from openerp.osv import fields, orm
+from xoeuf import fields, models
 
 
-class XopgiBackportConfig(orm.TransientModel):
+class XopgiBackportConfig(models.TransientModel):
     _name = 'xopgi.backports.config.settings'
     _inherit = 'res.config.settings'
 
-    _columns = {
-        'module_xopgi_partner_merge':
-            fields.boolean("Allow to merger partners",
-                           help="Install the module xopgi_partner_merge, "
-                           "which is a backport from Odoo's similar feature.")
-    }
+    module_xopgi_partner_merge = fields.Boolean(
+        "Allow to merger partners",
+        help=("Install the module xopgi_partner_merge, "
+              "which is a backport from Odoo's similar feature.")
+    )
