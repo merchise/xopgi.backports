@@ -29,7 +29,7 @@
     "description": "General fixes.",
     "depends": ['base', ],
     "data": [
-        'view/config.xml',
+        'view/%d/config.xml' % ODOO_VERSION_INFO[0],  # noqa
     ],
     "application": False,
 

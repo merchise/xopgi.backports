@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <record id="action_xopgi_backports_conf" model="ir.actions.act_window">
+      <field name="name">Odoo Backports</field>
+      <field name="res_model">xopgi.backports.config.settings</field>
+      <field name="view_mode">form</field>
+      <field name="target">inline</field>
+    </record>
+
+    <menuitem id="menu_autrement_operations_configuration"
+              parent="base.menu_custom"
+              sequence="20"
+              action="action_xopgi_backports_conf"/>
+
+    <record id="view_autrement_product_tags_configuration" model="ir.ui.view">
+      <field name="name">Odoo Backports</field>
+      <field name="model">xopgi.backports.config.settings</field>
+      <field name="arch" type="xml">
+        <form string="Odoo v8.0"
+              class= "oe_form_configuration" version="7.0">
+          <header>
+            <button string="Apply" type="object" name="execute"
+                    class="oe_highlight"/>
+            or
+            <button string="Cancel" type="object" name="cancel"
+                    class="oe_link"/>
+          </header>
+
+          <separator string="Partner"/>
+
+          <group>
+            <label for="id" string="Partner features"/>
+            <div>
+              <div name="module_xopgi_partner_merge">
+                <field name="module_xopgi_partner_merge"
+                       class="oe_inline"/>
+                <label for="module_xopgi_partner_merge"/>
+              </div>
+            </div>
+          </group>
+        </form>
+      </field>
+    </record>
+
+  </data>
+</openerp>
