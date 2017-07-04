@@ -33,6 +33,8 @@
 
     # MIGRATION POLICY: All addons are not included until someone work on them
     # and upgrade them.
+    #
+    # For Odoo 9+ we'll have to provide another solution.
     'installable': (8, 0) <= ODOO_VERSION_INFO < (9, 0),   # noqa
 
     'auto_install': False,

@@ -1,0 +1,9 @@
+<openerp>
+  <data>
+    <menuitem id="menu_backports_configuration"
+              parent="base.menu_config"
+              sequence="20"
+              action="action_xopgi_backports_conf"/>
+
+  </data>
+</openerp>

@@ -8,12 +8,8 @@
       <field name="target">inline</field>
     </record>
 
-    <menuitem id="menu_autrement_operations_configuration"
-              parent="base.menu_config"
-              sequence="20"
-              action="action_xopgi_backports_conf"/>
-
-    <record id="view_autrement_product_tags_configuration" model="ir.ui.view">
+    <record id="view_xopgi_backports_configuration"
+            model="ir.ui.view">
       <field name="name">Odoo Backports</field>
       <field name="model">xopgi.backports.config.settings</field>
       <field name="arch" type="xml">
@@ -26,9 +22,7 @@
             <button string="Cancel" type="object" name="cancel"
                     class="oe_link"/>
           </header>
-
           <separator string="Partner"/>
-
           <group>
             <label for="id" string="Partner features"/>
             <div>
