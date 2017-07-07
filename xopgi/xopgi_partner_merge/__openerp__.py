@@ -12,30 +12,30 @@
 # @created: 2014-11-12
 
 
-{
-    "name": "ERP backports, Partner Merge",
+dict(
+    name="ERP backports, Partner Merge",
+    version="2015.06.01",
+    author="Merchise Autrement",
+    website="http://www.merchise.org/addons/xopgi_backports/partner_merge",
+    category="Hidden",
+    description="General fixes.",
 
-    "version": "2015.06.01",
+    depends=[
+        'base',
+    ] + (['crm'] if ODOO_VERSION_INFO < (9, 0) else []),   # noqa
 
-    "author": "Merchise Autrement",
-    "website": "http://www.merchise.org/addons/xopgi_backports/partner_merge",
-    "category": "Hidden",
-    "description": "General fixes.",
-    "depends": ['base', 'crm'],
-    "data": [
-        'init/metaphone.xml',
-        'view/xopgi_partner_merge_view.xml',
-        'security/xopgi_partner_merge.xml',
+    data=[
+        'init/%d/metaphone.xml' % ODOO_VERSION_INFO[0],  # noqa
+        'security/%d/xopgi_partner_merge.xml' % ODOO_VERSION_INFO[0],  # noqa
+        'view/%d/xopgi_partner_merge_view.xml' % ODOO_VERSION_INFO[0],  # noqa
     ],
-    "demo_xml": [],
-    "css": [],
-    "application": False,
+    application=False,
 
     # MIGRATION POLICY: All addons are not included until someone work on them
     # and upgrade them.
     #
     # For Odoo 9+ we'll have to provide another solution.
-    'installable': (8, 0) <= ODOO_VERSION_INFO < (9, 0),   # noqa
+    installable=(8, 0) <= ODOO_VERSION_INFO < (9, 0),   # noqa
 
-    'auto_install': False,
-}
+    auto_install=False,
+)
