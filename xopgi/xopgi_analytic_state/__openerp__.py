@@ -17,7 +17,7 @@ dict(
     summary='Resurrects the state in analytic accounts',
     depends=['analytic'],
     data=['views/analytic_view.xml'],
-    installable=(9, 0) <= ODOO_VERSION_INFO < (10, 0),  # noqa
+    installable=(9, 0) <= ODOO_VERSION_INFO < (11, 0),  # noqa
 
     # Only install this, if someone requires it.
     auto_install=False,
