@@ -18,7 +18,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoeuf import models, fields
+from xoeuf import models, fields, api
 from xoeuf.models.proxy import AccountAnalyticAccount
 
 
@@ -37,3 +37,19 @@ class AnalyticAccount(models.Model):
         track_visibility='onchange',
         copy=False
     )
+
+    @api.multi
+    def set_open(self):
+        return self.write({'state': 'open'})
+
+    @api.multi
+    def set_close(self):
+        return self.write({'state': 'close'})
+
+    @api.multi
+    def set_pending(self):
+        return self.write({'state': 'pending'})
+
+    @api.multi
+    def set_cancel(self):
+        return self.write({'state': 'cancelled'})
