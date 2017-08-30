@@ -22,7 +22,7 @@ from xoeuf import ODOO_VERSION_INFO
 from xoeuf import models, fields
 from xoeuf.models.proxy import AccountAnalyticAccount
 
-if (9, 0) <= ODOO_VERSION_INFO < (10, 0):
+if (9, 0) <= ODOO_VERSION_INFO < (11, 0):
     class AnalyticAccount(models.Model):
         _inherit = models.get_modelname(AccountAnalyticAccount)
 
