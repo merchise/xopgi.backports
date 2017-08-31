@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+      <!-- Price list type -->
+      <record id="pricelist_type_sale" model="product.pricelist.type">
+	<field name="name">Sale Pricelist</field>
+	<field name="key">sale</field>
+      </record>
+      <record id="pricelist_type_purchase" model="product.pricelist.type">
+	<field name="name">Purchase Pricelist</field>
+	<field name="key">purchase</field>
+      </record>
+    </data>
+</openerp>
