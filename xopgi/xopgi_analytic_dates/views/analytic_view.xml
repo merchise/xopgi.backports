@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <record id="view_account_analytic_account_form_with_dates" model="ir.ui.view">
+      <field name="name">analytic.analytic.account.form.with.dates</field>
+      <field name="model">account.analytic.account</field>
+      <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//group[@name='main']" position="after">
+	  <group string="Renewal" name="contract">
+	    <p colspan="2" class="oe_grey oe_edit_only">
+	      Once the end date of the contract is
+	      passed (e.g. support contract) is
+	      reached, the account manager is notified
+	      by email to renew the contract with the
+	      customer.
+	    </p>
+	    <field name="date_start"/>
+	    <label for="date" string="End Date"/>
+	    <div name="duration">
+	      <field name="date" class="oe_inline"/>
+	    </div>
+	</group>
+	</xpath>
+      </field>
+    </record>
+  </data>
+</openerp>
