@@ -7,7 +7,7 @@ dict(
 
     # Warning:  This addon should only contain res_config items.
 
-    version="2017.06.21",
+    version="2017.09.20",
 
     author="Merchise Autrement",
     website="http://www.merchise.org/addons/xopgi_backports",

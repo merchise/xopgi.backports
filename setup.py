@@ -47,9 +47,12 @@ setup(name=project_name,
       include_package_data=True,
       zip_safe=False,
       install_requires=[
-          'xoeuf',
-          'xoutil',
+          'xoeuf>=0.14',
+          'xoutil>=1.7.7,<1.8',
       ],
+      extras_require={
+          'test': ['hypothesis>=3.24,<3.30'],
+      },
       entry_points="""
       [xoeuf.addons]
       xopgi_backports = xopgi.xopgi_backports
