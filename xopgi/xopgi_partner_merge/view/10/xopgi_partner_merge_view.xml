@@ -4,7 +4,7 @@
     <!-- the sequence of the configuration sub menu is 30 -->
     <menuitem id='crm.root_menu'
 	      name='Tools'
-	      parent='base.menu_base_partner'/>
+	      parent='sales_team.menu_base_partner'/>
 
 
     <record model="ir.actions.act_window" id="xopgi_partner_merge_act">

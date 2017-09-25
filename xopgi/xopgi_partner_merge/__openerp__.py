@@ -22,13 +22,13 @@
 
     'depends': [
         'base', 'xopgi_object_merger'
-       ] + (['crm'] if MAJOR_ODOO_VERSION < 9 else []),   # noqa
+       ] + (['crm'] if MAJOR_ODOO_VERSION in (8, 9, 10)  else []),   # noqa
 
     'data': [
         'init/%d/metaphone.xml' % MAJOR_ODOO_VERSION,  # noqa
         'security/%d/xopgi_partner_merge.xml' % MAJOR_ODOO_VERSION,  # noqa
         'view/%d/xopgi_partner_merge_view.xml' % MAJOR_ODOO_VERSION,  # noqa
-        'data/xopgi_partner_merge_cron.xml',
+        'data/xopgi_partner_merge_cron.xml'  # noqa
     ],
     'application': False,
 

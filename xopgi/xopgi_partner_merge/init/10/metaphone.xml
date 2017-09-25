@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<openerp>
+  <data noupdate="1">
+    <function model="xopgi.partner.merge.initialize"
+              name="install_fuzzy_extension" />
+  </data>
+</openerp>

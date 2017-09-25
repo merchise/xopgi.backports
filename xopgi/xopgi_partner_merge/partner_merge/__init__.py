@@ -19,8 +19,11 @@ from __future__ import (division as _py3_division,
 from xoeuf import MAJOR_ODOO_VERSION
 
 
-if MAJOR_ODOO_VERSION in (8, 9, 10):
+if MAJOR_ODOO_VERSION == 8:
     # MIGRATION POLICY: All addons are not included until someone work on them
     # and upgrade them.
-
-    from . import partner_merge  # noqa
+    from . import v8  # noqa
+if MAJOR_ODOO_VERSION == 9:
+   from . import v9  # noqa
+if MAJOR_ODOO_VERSION == 10:
+   from . import v10  # noqa
