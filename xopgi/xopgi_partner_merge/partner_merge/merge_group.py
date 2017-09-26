@@ -16,10 +16,10 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_impor)
 
-from openerp.tools import mute_logger
 from xoeuf import api, fields, models
 from xoeuf.odoo import _
 from xoeuf.odoo.exceptions import Warning as UserError
+from xoeuf.odoo.tools import mute_logger
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class ResPartner(models.Model):
 
 
 class MergePartnerGroup(models.TransientModel):
-    """Represent a partner o a parter group.
+    """A group of partner which are deemed duplicates.
 
     - Is a partner when `parent_id` points to another instance of the same
       type representing the group.
@@ -51,13 +51,18 @@ class MergePartnerGroup(models.TransientModel):
     """
     _name = 'xopgi.partner.merge.group'
     _order = "name asc"
-    dest_partner_id = fields.Many2one('res.partner', string='Destination partner')
-    partner_ids = fields.Many2many('res.partner',
-                                   rel='xopgi_partner_merge_group_partners',
-                                   id1='category_id',
-                                   id2='partner_id',
-                                   string='Partners')
 
+    dest_partner_id = fields.Many2one(
+        'res.partner',
+        string='Destination partner'
+    )
+    partner_ids = fields.Many2many(
+        'res.partner',
+        rel='xopgi_partner_merge_group_partners',
+        id1='category_id',
+        id2='partner_id',
+        string='Partners'
+    )
     name = fields.Char(
         related=('dest_partner_id', 'name'),
         string='Name',
@@ -67,29 +72,49 @@ class MergePartnerGroup(models.TransientModel):
 
     @api.multi
     def merge(self):
-        self.ensure_one()
-        self.with_context(active_test=False)._merge(self.partner_ids, self.dest_partner_id)
+        self.with_context(active_test=False)._merge(
+            self.partner_ids,
+            self.dest_partner_id
+        )
         self._cr.commit()  # init a new transaction
         self._remove_duplicated_mail_followers(self.dest_partner_id.id)
         self.unlink()
 
     @mute_logger('openerp.osv.expression', 'openerp.models')
     def _merge(self, partners, dst_partner=None):
-        """Merge seveal partners into just one."""
+        """Merge several `partners` into a single destination partner.
+
+        Original `partners` will be removed from the DB afterwards.  Only
+        `dst_partner` will remain.  All references to the original partners
+        will be re-establish to the target partner.
+
+        If `partners` constains less that 2 partners, do nothing.  All
+        partners must have the same email.
+
+        If `dst_partner` is none, the target partner defaults to the last
+        created record in `partners`.
+
+        :param partners: The source partners.
+        :type partners: A recordset of 'res.partners'.
+
+        :param dst_partner: The target partner.
+        :type dst_partner: A singleton recordset of 'res.partners' or None.
+
+        """
         partners = partners.exists()
         if len(partners) < 2:
             return
         partner_different_emails = {
-                p.email
-                for p in partners
-                if p.email and p.email.strip()
+            p.email
+            for p in partners
+            if p.email and p.email.strip()
         }
         if len(partner_different_emails) > 1:
-                raise UserError(
-                    _("All contacts must have the same email. Only the "
-                      "users with Partner Merge rights can merge contacts "
-                      "with different emails.")
-                )
+            raise UserError(
+                _("All contacts must have the same email. Only the "
+                  "users with Partner Merge rights can merge contacts "
+                  "with different emails.")
+            )
         if not dst_partner:
             partners = self._get_ordered_partner(partners)
             dst_partner = partners[-1]
@@ -106,6 +131,7 @@ class MergePartnerGroup(models.TransientModel):
         merger = self.env['object.merger']
         active_model = 'res.partner'
         merger._merge(active_model, dst_partner.id, src_partners.ids)
+        self._cr.commit()
         merger._check_on_alias_defaults(dst_partner.id, src_partners.ids, active_model)
         _logger.info(
             '(uid = %s) merged the partners %r with %s',
@@ -116,7 +142,6 @@ class MergePartnerGroup(models.TransientModel):
             partner.unlink()
 
     def _get_ordered_partner(self, partners):
-
         ordered_partners = partners.sorted(
             key=lambda partner: (partner.create_date, partner.active),
             reverse=True
@@ -132,7 +157,8 @@ class MergePartnerGroup(models.TransientModel):
           FROM (SELECT COUNT(id) quantity, res_id, res_model, partner_id
                 FROM mail_followers WHERE partner_id = %s
                 GROUP BY res_id, res_model, partner_id) grouped_table
-          WHERE quantity>1"""
+          WHERE quantity>1
+        """
         self._cr.execute(select_query % dst_partner_id)
         read = self._cr.fetchall()
         if not read:

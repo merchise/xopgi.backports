@@ -16,14 +16,5 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-from xoeuf import MAJOR_ODOO_VERSION
-
-
-if MAJOR_ODOO_VERSION == 8:
-    # MIGRATION POLICY: All addons are not included until someone work on them
-    # and upgrade them.
-    from . import v8  # noqa
-if MAJOR_ODOO_VERSION == 9:
-   from . import v9  # noqa
-if MAJOR_ODOO_VERSION == 10:
-   from . import v10  # noqa
+from . import merge_group  # noqa
+from . import duplicates   # noqa

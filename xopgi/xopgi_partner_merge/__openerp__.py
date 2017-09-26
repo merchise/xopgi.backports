@@ -20,9 +20,10 @@
     'category': "Hidden",
     'description': "General fixes.",
 
-    'depends': [
-        'base', 'xopgi_object_merger'
-       ] + (['crm'] if MAJOR_ODOO_VERSION in (8, 9, 10)  else []),   # noqa
+    'depends': list(filter(bool, [
+        'base',
+        'xopgi_object_merger',
+    ])),
 
     'data': [
         'init/%d/metaphone.xml' % MAJOR_ODOO_VERSION,  # noqa

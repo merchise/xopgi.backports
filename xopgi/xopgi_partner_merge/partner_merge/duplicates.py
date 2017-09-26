@@ -7,19 +7,12 @@
 # All rights reserved.
 #
 # This is free software; you can redistribute it and/or modify it under the
-#!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-# ---------------------------------------------------------------------
-# partner_duplicate
-# ---------------------------------------------------------------------
-# Copyright (c) 2016-2017 Merchise Autrement [~º/~] and Contributors
-# All rights reserved.
-#
-# This is free software; you can redistribute it and/or modify it under the
 # terms of the LICENCE attached (see LICENCE file) in the distribution
 # package.
 #
 # Created on 2017-09-13
+
+'''Detect possible duplicate partners.'''
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -31,6 +24,7 @@ from xoeuf.odoo import _
 from xoeuf.odoo.exceptions import Warning as UserError
 from xoeuf.odoo.jobs import Deferred, until_timeout
 from xoeuf.models.extensions import get_creator
+
 import logging
 _logger = logging.getLogger(__name__)
 del logging
