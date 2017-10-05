@@ -16,6 +16,7 @@ dict(
     name='xopgi_analytic_manager',
     summary='Resurrects the manager_id in analytic accounts',
     depends=['analytic'],
+    data=['views/analytic_view.xml'],
     installable=(9, 0) <= ODOO_VERSION_INFO < (11, 0),  # noqa
 
     # Only install this, if someone requires it.
