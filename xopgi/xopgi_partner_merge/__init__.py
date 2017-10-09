@@ -23,4 +23,5 @@ if MAJOR_ODOO_VERSION in (8, 9, 10):
     # MIGRATION POLICY: All addons are not included until someone work on them
     # and upgrade them.
 
-    from . import partner_merge  # noqa
+    from . import duplicates  # noqa
+    from . import merge_group  # noqa

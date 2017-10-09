@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
   <data>
-    <!-- the sequence of the configuration sub menu is 30 -->
-    <menuitem id='crm.root_menu'
-	      name='Tools'
-	      parent='sales_team.menu_base_partner'/>
-
-
     <record model="ir.actions.act_window" id="xopgi_partner_merge_act">
       <field name="name">Duplicate contacts</field>
       <field name="res_model">xopgi.partner.merge.group</field>
@@ -19,9 +13,9 @@
       <field name='name'>xopgi.partner.merge.group.tree</field>
       <field name='model'>xopgi.partner.merge.group</field>
       <field name='arch' type='xml'>
-	     <tree>
-		<field name="name"></field>
-	     </tree>
+	<tree>
+	  <field name="name"></field>
+	</tree>
       </field>
     </record>
 
@@ -60,8 +54,7 @@
       </field>
     </record>
 
-    <act_window
-	id="action_partner_merge"
+    <act_window	id="action_partner_merge"
 	res_model="xopgi.partner.merge.group"
 	src_model="res.partner"
 	multi="True"
@@ -74,11 +67,5 @@
 	name="Merge"
 	/>
 
-   <menuitem id='crm.partner_merge_automatic_menu'
-	      action='xopgi_partner_merge_act'
-	      groups='base.group_system'
-	      parent='crm.root_menu' />
-
   </data>
-
 </openerp>

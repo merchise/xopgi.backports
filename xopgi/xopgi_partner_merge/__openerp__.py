@@ -26,9 +26,10 @@
     ])),
 
     'data': [
-        'init/%d/metaphone.xml' % MAJOR_ODOO_VERSION,  # noqa
-        'security/%d/xopgi_partner_merge.xml' % MAJOR_ODOO_VERSION,  # noqa
-        'view/%d/xopgi_partner_merge_view.xml' % MAJOR_ODOO_VERSION,  # noqa
+        'init/metaphone.xml',  # noqa
+        'security/xopgi_partner_merge.xml',  # noqa
+        'view/partner_merge_view.xml',  # noqa
+        "view/%d/menu.xml" % MAJOR_ODOO_VERSION, # noqa
         'data/xopgi_partner_merge_cron.xml'  # noqa
     ],
     'application': False,

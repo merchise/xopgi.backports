@@ -71,42 +71,34 @@ class MergePartnerGroup(models.TransientModel):
     )
 
     @api.multi
-    def merge(self):
-        self.with_context(active_test=False)._merge(
-            self.partner_ids,
-            self.dest_partner_id
-        )
-        self._cr.commit()  # init a new transaction
-        self._remove_duplicated_mail_followers(self.dest_partner_id.id)
-        self.unlink()
-
     @mute_logger('openerp.osv.expression', 'openerp.models')
-    def _merge(self, partners, dst_partner=None):
+    def merge(self):
         """Merge several `partners` into a single destination partner.
 
         Original `partners` will be removed from the DB afterwards.  Only
-        `dst_partner` will remain.  All references to the original partners
+        target will remain.  All references to the original partners
         will be re-establish to the target partner.
 
         If `partners` constains less that 2 partners, do nothing.  All
         partners must have the same email.
 
-        If `dst_partner` is none, the target partner defaults to the last
+        If sources `partner` is none, the target partner defaults to the last
         created record in `partners`.
 
-        :param partners: The source partners.
-        :type partners: A recordset of 'res.partners'.
+        :param sources: The source partners.
+        :type sources: A recordset of 'res.partners'.
 
-        :param dst_partner: The target partner.
-        :type dst_partner: A singleton recordset of 'res.partners' or None.
+        :param target: The target partner.
+        :type target: A singleton recordset of 'res.partners' or None.
 
         """
-        partners = partners.exists()
-        if len(partners) < 2:
-            return
+        sources = self.partner_ids
+        target = self.dest_partner_id
+        if sources.sudo().exists() and len(sources) < 2:
+            raise UserError(_("Constains less that 2 partners, do nothing"))
         partner_different_emails = {
             p.email
-            for p in partners
+            for p in sources
             if p.email and p.email.strip()
         }
         if len(partner_different_emails) > 1:
@@ -115,38 +107,9 @@ class MergePartnerGroup(models.TransientModel):
                   "users with Partner Merge rights can merge contacts "
                   "with different emails.")
             )
-        if not dst_partner:
-            partners = self._get_ordered_partner(partners)
-            dst_partner = partners[-1]
-        src_partners = partners - dst_partner
-        _logger.info("dst_partner: %s", dst_partner.id)
-        name_emails = [(p.name, p.email or 'n/a', p.id) for p in src_partners]
-        name_emails = ', '.join('%s<%s>(ID %s)' % name for name in name_emails)
-        dst_partner.message_post(
-            body='%s %s' % (
-                _("Merged with the following partners:"),
-                name_emails
-            )
-        )
-        merger = self.env['object.merger']
-        active_model = 'res.partner'
-        merger._merge(active_model, dst_partner.id, src_partners.ids)
-        self._cr.commit()
-        merger._check_on_alias_defaults(dst_partner.id, src_partners.ids, active_model)
-        _logger.info(
-            '(uid = %s) merged the partners %r with %s',
-            self._uid, src_partners.ids,
-            dst_partner.id
-        )
-        for partner in src_partners:
-            partner.unlink()
-
-    def _get_ordered_partner(self, partners):
-        ordered_partners = partners.sorted(
-            key=lambda partner: (partner.create_date, partner.active),
-            reverse=True
-        )
-        return ordered_partners
+        object_merger = self.env['object.merger']
+        object_merger.merge(sources, target)
+        self.unlink()
 
     def _remove_duplicated_mail_followers(self, dst_partner_id):
         """Delete all duplicated mail_followers with
