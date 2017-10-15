@@ -21,4 +21,6 @@ from __future__ import (division as _py3_division,
 from xoeuf import MAJOR_ODOO_VERSION
 
 if 9 <= MAJOR_ODOO_VERSION <= 10:
-    from . import analytic # noqa
+    from . import v9 # noqa
+
+from . import common  # noqa
