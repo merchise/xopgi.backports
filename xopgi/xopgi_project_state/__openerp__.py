@@ -13,11 +13,11 @@
 # Created on 2017-06-21
 
 dict(
-    name='xopgi_analytic_dates',
-    summary='Resurrects the validity dates in analytic accounts',
-    depends=['analytic'],
+    name='xopgi_project_state',
+    summary='Resurrects the state in projects',
+    depends=['project'],
     data=[
-        'views/%d/analytic_view.xml' % MAJOR_ODOO_VERSION,  # noqa
+        'views/%d/project.xml' % MAJOR_ODOO_VERSION,  # noqa
     ],
 
     # This is installable from Odoo 8+ just for us to be able to have it

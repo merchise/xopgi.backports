@@ -17,10 +17,4 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
-
-from xoeuf import MAJOR_ODOO_VERSION
-
-if 9 <= MAJOR_ODOO_VERSION <= 10:
-    from . import v9 # noqa
-
-from . import common  # noqa
+from . import models  # noqa

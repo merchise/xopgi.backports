@@ -16,8 +16,14 @@ dict(
     name='xopgi_analytic_state',
     summary='Resurrects the state in analytic accounts',
     depends=['analytic'],
-    data=['views/analytic_view.xml'],
-    installable=(9, 0) <= ODOO_VERSION_INFO < (11, 0),  # noqa
+    data=[
+        'views/%d/analytic_view.xml' % MAJOR_ODOO_VERSION,  # noqa
+    ],
+
+    # This is installable from Odoo 8+ just for us to be able to have it
+    # installed before migrating the DB.  Otherwise, OpenUpgrade won't install
+    # it and we may loose the data while migrating.
+    installable=8 <= MAJOR_ODOO_VERSION < 11,  # noqa
 
     # Only install this, if someone requires it.
     auto_install=False,

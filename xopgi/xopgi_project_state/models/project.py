@@ -19,37 +19,21 @@ from __future__ import (division as _py3_division,
 
 
 from xoeuf import models, fields, api
-from xoeuf.models.proxy import AccountAnalyticAccount
+from xoeuf.models.proxy import ProjectProject as BaseProject
 
 
-class AnalyticAccount(models.Model):
-    _inherit = models.get_modelname(AccountAnalyticAccount)
+class Project(models.Model):
+    _inherit = models.get_modelname(BaseProject)
 
     state = fields.Selection(
         selection=[('draft', 'New'),
                    ('open', 'In Progress'),
-                   ('pending', 'To Renew'),
-                   ('close', 'Closed'),
-                   ('cancelled', 'Cancelled')],
+                   ('cancelled', 'Cancelled'),
+                   ('pending', 'Pending'),
+                   ('close', 'Closed')],
         string='Status',
         required=True,
-        default='draft',
+        copy=False,
+        default='open',
         track_visibility='onchange',
-        copy=False
     )
-
-    @api.multi
-    def set_open(self):
-        return self.write({'state': 'open'})
-
-    @api.multi
-    def set_close(self):
-        return self.write({'state': 'close'})
-
-    @api.multi
-    def set_pending(self):
-        return self.write({'state': 'pending'})
-
-    @api.multi
-    def set_cancel(self):
-        return self.write({'state': 'cancelled'})
