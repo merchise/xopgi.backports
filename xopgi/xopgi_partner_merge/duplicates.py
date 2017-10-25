@@ -42,7 +42,7 @@ class PartnerMergeInit(models.TransientModel):
     @api.model
     def install_fuzzy_extension(self):
         try:
-            # TODO [eddy]: This is bound to fail if the user is not a
+            # TODO: This is bound to fail if the user is not a
             # super-user... Check with the PostgreSQL documentation for
             # details.
             self._cr.execute('CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;')
@@ -62,7 +62,7 @@ class MergePartnerWizard(models.TransientModel):
 
     @api.multi
     def _process_query(self):
-        """Execute the select request and write the results."""
+        """Execute the select query."""
         query = '''SELECT b.id
             FROM res_partner AS a JOIN res_partner AS b ON (a.id < b.id)
             WHERE (
@@ -87,7 +87,7 @@ class MergePartnerWizard(models.TransientModel):
 
     @api.model
     def generate_duplicate(self):
-        """* Compute the selected groups (with duplication)
+        """Compute the selected groups (with duplication)
         """
         proxy = self.env[('xopgi.partner.merge.group')]
         for partner_id, others in until_timeout(self._process_query()):
@@ -101,6 +101,6 @@ class MergePartnerWizard(models.TransientModel):
 
     @api.model
     def start_process_duplicate(self):
-        ''' Use celery and create the groups .
+        '''Use celery and create the groups .
         '''
         return Deferred(self.generate_duplicate)
