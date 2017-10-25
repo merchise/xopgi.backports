@@ -110,33 +110,3 @@ class MergePartnerGroup(models.TransientModel):
         object_merger = self.env['object.merger']
         object_merger.merge(sources, target)
         self.unlink()
-
-    def _remove_duplicated_mail_followers(self, dst_partner_id):
-        """Delete all duplicated mail_followers with
-        partner_id = dst_partner_id and create one by each group.
-        """
-        select_query = """
-          SELECT res_id, res_model, partner_id
-          FROM (SELECT COUNT(id) quantity, res_id, res_model, partner_id
-                FROM mail_followers WHERE partner_id = %s
-                GROUP BY res_id, res_model, partner_id) grouped_table
-          WHERE quantity>1
-        """
-        self._cr.execute(select_query % dst_partner_id)
-        read = self._cr.fetchall()
-        if not read:
-            return True
-        del_query = """
-          DELETE FROM mail_followers
-          WHERE res_id={res_id} AND res_model='{res_model}' AND partner_id={partner_id}
-          """
-        insert_query = """
-          INSERT INTO mail_followers(res_id, res_model, partner_id)
-          VALUES ({res_id}, '{res_model}', {partner_id})
-        """
-        for res_id, res_model, partner_id in read:
-            self._cr.execute(del_query.format(res_id=res_id, res_model=res_model,
-                                              partner_id=dst_partner_id))
-            self._cr.execute(insert_query.format(res_id=res_id, res_model=res_model,
-                                                 partner_id=dst_partner_id))
-        return True
