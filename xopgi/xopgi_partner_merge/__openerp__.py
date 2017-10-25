@@ -22,6 +22,7 @@
 
     'depends': list(filter(bool, [
         'base',
+        'crm',
         'xopgi_object_merger',
     ])),
 
