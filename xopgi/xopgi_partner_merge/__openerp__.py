@@ -13,29 +13,33 @@
 
 
 {
-    "name": "ERP backports, Partner Merge",
+    'name': "ERP backports, Partner Merge",
+    'version': "2015.06.01",
+    'author': "Merchise Autrement",
+    'website': "http://www.merchise.org/addons/xopgi_backports/partner_merge",
+    'category': "Hidden",
+    'description': "General fixes.",
 
-    "version": "2015.06.01",
+    'depends': list(filter(bool, [
+        'base',
+        'crm',
+        'xopgi_object_merger',
+    ])),
 
-    "author": "Merchise Autrement",
-    "website": "http://www.merchise.org/addons/xopgi_backports/partner_merge",
-    "category": "Hidden",
-    "description": "General fixes.",
-    "depends": ['base', 'crm'],
-    "data": [
-        'init/metaphone.xml',
-        'view/xopgi_partner_merge_view.xml',
-        'security/xopgi_partner_merge.xml',
+    'data': [
+        'init/metaphone.xml',  # noqa
+        'security/xopgi_partner_merge.xml',  # noqa
+        'view/partner_merge_view.xml',  # noqa
+        "view/%d/menu.xml" % MAJOR_ODOO_VERSION, # noqa
+        'data/xopgi_partner_merge_cron.xml'  # noqa
     ],
-    "demo_xml": [],
-    "css": [],
-    "application": False,
+    'application': False,
 
     # MIGRATION POLICY: All addons are not included until someone work on them
     # and upgrade them.
     #
     # For Odoo 9+ we'll have to provide another solution.
-    'installable': (8, 0) <= ODOO_VERSION_INFO < (9, 0),   # noqa
+    'installable':  8 <= MAJOR_ODOO_VERSION < 11,   # noqa
 
     'auto_install': False,
 }
