@@ -18,7 +18,8 @@ dict(
     depends=['product'],
     data=[
         'views/%d/pricelist_view.xml' % MAJOR_ODOO_VERSION,  # noqa
-        'data/%d/pricelist_data.xml' % MAJOR_ODOO_VERSION,  # noqa
+        'security/ir.model.access.csv',
+        'data/pricelist_data.xml'
     ],
 
     # This is installable from Odoo 8+ just for us to be able to have it
