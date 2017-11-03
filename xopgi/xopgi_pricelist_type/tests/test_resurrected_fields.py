@@ -35,7 +35,7 @@ class TestFieldsExist(TransactionCase):
 
 class TestFieldsExist2(TransactionCase):
     def setUp(self):
-        super(TestFieldsExist, self).setUp()
+        super(TestFieldsExist2, self).setUp()
         self.Model = self.env[get_modelname(Model2)]
         self.resurrected_fields = ['name', 'key', ]
 
@@ -46,5 +46,5 @@ class TestFieldsExist2(TransactionCase):
 
     def test_views_load(self):
         from xoeuf.models.extensions import get_treeview_action
-        self.Model.search([]).get_formview_action()
-        get_treeview_action(self.Model.search([]))
+        self.Model.search([], limit=1).get_formview_action()
+        get_treeview_action(self.Model.search([]), limit=1)
