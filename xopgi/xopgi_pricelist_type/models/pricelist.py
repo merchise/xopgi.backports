@@ -48,8 +48,13 @@ class ProductPricelist(models.Model):
         pricelists = self.env['product.pricelist.type'].search([], order='name')
         return [(p.key, p.name) for p in pricelists]
 
+    @api.model
+    def _pricelist_type_default(self):
+        pricelist_type1 = self.env['product.pricelist.type'].search([], limit=1)
+        return pricelist_type1 and pricelist_type1.key or None
+
     type = fields.Selection(
         selection=_pricelist_type_get,
         string='Pricelist Type',
-        required=True
+        default=_pricelist_type_default
     )
