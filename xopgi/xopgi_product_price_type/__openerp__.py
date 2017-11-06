@@ -13,14 +13,14 @@ dict(
     depends=['product'],
     data=[
         'views/%d/pricelist_view.xml' % MAJOR_ODOO_VERSION,  # noqa
-        'data/product_data.xml',
-        'security/ir.model.access.csv',
+        'data/%d/product_data.xml' % MAJOR_ODOO_VERSION,  # noqa,
+        'security/%d/ir.model.access.csv' % MAJOR_ODOO_VERSION,  # noqa,
     ],
 
     # This is installable from Odoo 8+ just for us to be able to have it
     # installed before migrating the DB.  Otherwise, OpenUpgrade won't install
     # it and we may loose the data while migrating.
-    installable=8 < MAJOR_ODOO_VERSION < 11,  # noqa
+    installable=8 <= MAJOR_ODOO_VERSION < 11,  # noqa
 
     # Only install this, if someone requires it.
     auto_install=False,
