@@ -1,23 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# __openerp__
-# ---------------------------------------------------------------------
-# Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2017-06-21
 
 dict(
     name='xopgi_pricelist_type',
-    summary='Resurrects the type in product pricelists',
+    description='Resurrects the type in product pricelists',
     depends=['product'],
     data=[
         'views/%d/pricelist_view.xml' % MAJOR_ODOO_VERSION,  # noqa
+        'security/%d/ir.model.access.csv' % MAJOR_ODOO_VERSION,  # noqa,
         'data/%d/pricelist_data.xml' % MAJOR_ODOO_VERSION,  # noqa
     ],
 

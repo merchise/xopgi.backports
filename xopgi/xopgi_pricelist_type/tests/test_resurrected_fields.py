@@ -12,18 +12,13 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 from xoeuf.odoo.tests.common import TransactionCase
-from xoeuf.models.proxy import ProductPricelist as Model
-from xoeuf.models.proxy import ProductPricelistType as Model2
+from xoeuf.models.proxy import ProductPricelist as Pricelist
+from xoeuf.models.proxy import ProductPricelistType as PricelistType
 from xoeuf.models import get_modelname
 
 
-class TestFieldsExist(TransactionCase):
-    def setUp(self):
-        super(TestFieldsExist, self).setUp()
-        self.Model = self.env[get_modelname(Model)]
-        self.resurrected_fields = ['type', ]
-
-    def test_fields_exists(self):
+class TestResurrectedFields(object):
+    def test_model_has_resurrected_fields(self):
         for attr in self.resurrected_fields:
             self.assertTrue(hasattr(self.Model, attr), msg='Missing %s' % attr)
 
@@ -33,18 +28,15 @@ class TestFieldsExist(TransactionCase):
         get_treeview_action(self.Model.search([], limit=1))
 
 
-class TestFieldsExist2(TransactionCase):
+class TestTypeField(TransactionCase, TestResurrectedFields):
     def setUp(self):
-        super(TestFieldsExist, self).setUp()
-        self.Model = self.env[get_modelname(Model2)]
+        super(TestTypeField, self).setUp()
+        self.Model = self.env[get_modelname(Pricelist)]
+        self.resurrected_fields = ['type', ]
+
+
+class TestPricelistTypeFields(TransactionCase, TestResurrectedFields):
+    def setUp(self):
+        super(TestPricelistTypeFields, self).setUp()
+        self.Model = self.env[get_modelname(PricelistType)]
         self.resurrected_fields = ['name', 'key', ]
-
-    def test_fields_exists(self):
-        self.assertTrue(
-            all(hasattr(self.Model, attr) for attr in self.resurrected_fields)
-        )
-
-    def test_views_load(self):
-        from xoeuf.models.extensions import get_treeview_action
-        self.Model.search([]).get_formview_action()
-        get_treeview_action(self.Model.search([]))
