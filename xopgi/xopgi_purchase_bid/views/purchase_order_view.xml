@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <record id="view_purchase_order_form_with_date" model="ir.ui.view">
+      <field name="name">purchase.order.form.with.date</field>
+      <field name="model">purchase.order</field>
+      <field name="inherit_id" ref="purchase.purchase_order_form"/>
+      <field name="arch" type="xml">
+	<xpath expr="//field[@name='state']" position="before">
+	  <button name="accion_bid_received" states="sent" type="object" string="Bid Received" class="oe_highlight"/>
+	</xpath>
+	<xpath expr="//field[@name='state']" position="attributes">
+	  <attribute name="statusbar_visible">"draft,sent,bid,purchase,done"</attribute>
+	</xpath>
+	<xpath expr="//notebook" position="inside">
+	  <page string="RFQ &amp; Bid">
+	    <group>
+	      <field name="incoterm_id"/>
+	      <field name="bid_date"/>
+	      <field name="bid_validity"/>
+	    </group>
+	  </page>
+	</xpath>
+	<xpath expr="//button[@name='button_confirm']" position="attributes">
+	  <attribute name="attrs">{'invisible': [('state','not in', ('draft', 'bid'))]}</attribute>
+	</xpath>
+	<xpath expr="//button[@name='button_cancel']" position="attributes">
+	  <attribute name="attrs">{'invisible': [('state','not in', ('bid'))]}</attribute>
+	</xpath>
+
+
+      </field>
+    </record>
+  </data>
+</openerp>
