@@ -13,6 +13,7 @@ from __future__ import (division as _py3_division,
 
 from xoeuf import MAJOR_ODOO_VERSION
 
+from . import test_resurrected_fields  # noqa
+
 if MAJOR_ODOO_VERSION > 8:
-    from . import test_resurrected_fields  # noqa
     from . import test_access_right  # noqa
