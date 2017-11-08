@@ -1,1 +1,1 @@
-/home/monica/src/xopgi.backports/xopgi/xopgi_project_task_stage_closed/__openerp__.py
+__openerp__.py
