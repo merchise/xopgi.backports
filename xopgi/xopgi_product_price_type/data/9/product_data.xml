@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="1">
+    <!-- Resource: product.price.type -->
+    <record id="product.list_price" model="product.price.type">
+      <field name="name">Public Price</field>
+      <field name="field">list_price</field>
+      <field name="currency_id" ref="base.EUR"/>
+    </record>
+    <record id="product.standard_price" model="product.price.type">
+      <field name="name">Cost Price</field>
+      <field name="field">standard_price</field>
+      <field name="currency_id" ref="base.EUR"/>
+    </record>
+  </data>
+</openerp>
