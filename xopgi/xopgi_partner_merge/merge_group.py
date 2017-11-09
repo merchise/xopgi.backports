@@ -102,11 +102,16 @@ class MergePartnerGroup(models.TransientModel):
             if p.email and p.email.strip()
         }
         if len(partner_different_emails) > 1:
-            raise UserError(
-                _("All contacts must have the same email. Only the "
-                  "users with Partner Merge rights can merge contacts "
-                  "with different emails.")
-            )
+            user = self.env.user
+            if user.has_group('xopgi_partner_merge.base_parter_merger'):
+                object_merger = self.env['object.merger']
+                object_merger.merge(sources, target)
+            else:
+                raise UserError(
+                    _("All contacts must have the same email. Only the "
+                      "users with Partner Merge rights can merge contacts "
+                      "with different emails.")
+                )
         object_merger = self.env['object.merger']
         object_merger.merge(sources, target)
         self.unlink()
