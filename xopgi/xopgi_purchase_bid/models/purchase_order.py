@@ -50,7 +50,9 @@ class PurchaseOrder(models.Model):
     incoterm_id = fields.Many2one(
         'stock.incoterms',
         string="Incoterm",
-        help="International Commercial Terms are a series of predefined commercial terms used in international transactions.")
+        help=("International Commercial Terms are a series of predefined "
+              "commercial terms used in international transactions.")
+    )
 
     @api.multi
     def accion_bid_received(self):
@@ -66,8 +68,10 @@ class PurchaseOrder(models.Model):
     def button_confirm(self):
         for order in self:
             if order.state not in ['draft', 'sent', 'bid']:
-                raise UserError(_('Information!'),
-                                _('The purchase order has to be in the Draft, Sent, Bid'))
+                raise UserError(
+                    _('Information!'),
+                    _('The purchase order has to be in the Draft, Sent, Bid')
+                )
             order._add_supplier_to_product()
             # Deal with double validation process
             if order.company_id.po_double_validation == 'one_step'\
