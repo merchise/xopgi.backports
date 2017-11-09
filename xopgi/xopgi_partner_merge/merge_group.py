@@ -34,7 +34,7 @@ class ResPartner(models.Model):
     create_date = fields.Datetime('Create Date', readonly=True)
 
 
-class MergePartnerGroup(models.TransientModel):
+class MergePartnerGroup(models.Model):
     """A group of partner which are deemed duplicates.
 
     - Is a partner when `parent_id` points to another instance of the same
