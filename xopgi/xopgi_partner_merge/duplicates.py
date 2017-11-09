@@ -73,7 +73,7 @@ class MergePartnerWizard(models.TransientModel):
         ) AND levenshtein(
                     metaphone(substring(a.name, '([^@]+)@?'), 255),
                     metaphone(substring(b.name, '([^@]+)@?'), 255)) <= 3
-          AND a.id = {id}'''
+          AND a.id = {id} and b.active is True'''
         partners = self.env['res.partner'].search([], order='id')
         todo = partners.ids
         while todo:
