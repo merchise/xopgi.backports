@@ -1,16 +1,11 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# base_partner_merge
-# ---------------------------------------------------------------------
-# Copyright (c) 2016-2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2016-03-30
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -39,7 +34,7 @@ class ResPartner(models.Model):
     create_date = fields.Datetime('Create Date', readonly=True)
 
 
-class MergePartnerGroup(models.TransientModel):
+class MergePartnerGroup(models.Model):
     """A group of partner which are deemed duplicates.
 
     - Is a partner when `parent_id` points to another instance of the same
@@ -102,11 +97,16 @@ class MergePartnerGroup(models.TransientModel):
             if p.email and p.email.strip()
         }
         if len(partner_different_emails) > 1:
-            raise UserError(
-                _("All contacts must have the same email. Only the "
-                  "users with Partner Merge rights can merge contacts "
-                  "with different emails.")
-            )
+            user = self.env.user
+            if user.has_group('xopgi_partner_merge.base_parter_merger'):
+                object_merger = self.env['object.merger']
+                object_merger.merge(sources, target)
+            else:
+                raise UserError(
+                    _("All contacts must have the same email. Only the "
+                      "users with Partner Merge rights can merge contacts "
+                      "with different emails.")
+                )
         object_merger = self.env['object.merger']
         object_merger.merge(sources, target)
         self.unlink()
