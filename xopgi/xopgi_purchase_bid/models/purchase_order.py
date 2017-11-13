@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # ---------------------------------------------------------------------
-# analytic
-# ---------------------------------------------------------------------
-# Copyright (c) 2017 Merchise Autrement [~º/~] and Contributors
+# Copyright (c) Merchise Autrement [~º/~] and Contributors
 # All rights reserved.
 #
-# This is free software; you can redistribute it and/or modify it under the
-# terms of the LICENCE attached (see LICENCE file) in the distribution
-# package.
+# This is free software; you can do what the LICENCE file allows you to.
 #
-# Created on 2017-08-16
-
 
 from __future__ import (division as _py3_division,
                         print_function as _py3_print,
@@ -74,10 +68,7 @@ class PurchaseOrder(models.Model):
                 )
             order._add_supplier_to_product()
             # Deal with double validation process
-            if order.company_id.po_double_validation == 'one_step'\
-                   or (order.company_id.po_double_validation == 'two_step'\
-                   and order.amount_total < self.env.user.company_id.currency_id.compute(order.company_id.po_double_validation_amount, order.currency_id))\
-                   or order.user_has_groups('purchase.group_purchase_manager'):
+            if order.company_id.po_double_validation == 'one_step' or (order.company_id.po_double_validation == 'two_step' and order.amount_total < self.env.user.company_id.currency_id.compute(order.company_id.po_double_validation_amount, order.currency_id)) or order.user_has_groups('purchase.group_purchase_manager'):  # noqa
                 order.button_approve()
             else:
                 order.write({'state': 'to approve'})

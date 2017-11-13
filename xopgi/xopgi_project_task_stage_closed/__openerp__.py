@@ -23,4 +23,3 @@ dict(
     # Only install this, if someone requires it.
     auto_install=False,
 )
-
