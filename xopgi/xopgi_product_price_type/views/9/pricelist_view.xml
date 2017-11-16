@@ -24,8 +24,6 @@
       <field name="view_type">form</field>
       <field name="view_mode">tree,form</field>
     </record>
-    <menuitem
-        action="product_price_type_action" id="menu_product_price_type"
-        parent="xhg_autrement_operations.menu_autrement_operations_configuration" sequence="4" groups="base.group_no_one"/>
+
   </data>
 </openerp>
