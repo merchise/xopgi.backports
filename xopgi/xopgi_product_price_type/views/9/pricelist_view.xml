@@ -10,11 +10,13 @@
             <field name="name"/>
             <field name="active"/>
             <field name="field"/>
-            <field name="currency_id" groups="base.group_multi_currency"/>
+            <field name="currency_id"
+                   groups="base.group_multi_currency"/>
           </group>
         </form>
       </field>
     </record>
+
     <record id="product_price_type_action" model="ir.actions.act_window">
       <field name="name">Price Types</field>
       <field name="type">ir.actions.act_window</field>
@@ -22,8 +24,6 @@
       <field name="view_type">form</field>
       <field name="view_mode">tree,form</field>
     </record>
-    <menuitem
-        action="product_price_type_action" id="menu_product_price_type"
-        parent="xhg_autrement_operations.menu_autrement_operations_configuration" sequence="4" groups="base.group_no_one"/>
+
   </data>
 </openerp>
