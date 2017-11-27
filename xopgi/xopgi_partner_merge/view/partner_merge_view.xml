@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
   <data>
-    <record model="ir.actions.act_window" id="xopgi_partner_merge_act">
+    <record model="ir.actions.act_window" id="crm.base_partner_merge_automatic_act">
       <field name="name">Duplicate contacts</field>
       <field name="res_model">xopgi.partner.merge.group</field>
       <field name="view_type">form</field>
