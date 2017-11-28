@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <openerp>
   <data>
+    <menuitem id='crm.root_menu'
+	      name='Tools'
+	      parent='base.menu_base_partner'/>
     <menuitem id='crm.partner_merge_automatic_menu'
-	      action='xopgi_partner_merge_act'
+	      action='crm.base_partner_merge_automatic_act'
 	      groups='base.group_system'
-	      parent='crm.root_menu' />
-
+	      parent='crm.root_menu'/>
   </data>
 </openerp>

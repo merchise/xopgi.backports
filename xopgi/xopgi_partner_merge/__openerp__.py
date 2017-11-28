@@ -24,8 +24,9 @@
     'data': [
         'init/metaphone.xml',  # noqa
         'security/xopgi_partner_merge.xml',  # noqa
+        'security/ir.model.access.csv',  # noqa
         'view/partner_merge_view.xml',  # noqa
-        "view/%d/menu.xml" % MAJOR_ODOO_VERSION, # noqa
+        'view/%d/menu.xml' % MAJOR_ODOO_VERSION,  # noqa
         'data/xopgi_partner_merge_cron.xml'  # noqa
     ],
     'application': False,
