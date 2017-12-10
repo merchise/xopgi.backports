@@ -11,8 +11,8 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_import)
 
+from xoeuf import fields, MAJOR_ODOO_VERSION
 from xoeuf.odoo.tests.common import TransactionCase
-from xoeuf import fields
 
 
 class TestBidDateReceived(TransactionCase):
@@ -24,12 +24,14 @@ class TestBidDateReceived(TransactionCase):
             limit=1
         )
 
-        self.order = purchase_order.create(dict(
+        values = dict(
             partner_id=partner.id,
             date_planned=fields.Datetime.now(),
             date_order=fields.Datetime.now(),
-        ))
-
+        )
+        if MAJOR_ODOO_VERSION < 9:
+            values['location_id'] = self.env.ref('stock.stock_location_3').id
+        self.order = purchase_order.create(values)
         self.order.write({'state': 'sent'})
 
     def test_bid_date(self):
