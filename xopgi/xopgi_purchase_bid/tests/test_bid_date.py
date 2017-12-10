@@ -25,9 +25,9 @@ class TestBidDateReceived(TransactionCase):
         )
 
         self.order = purchase_order.create(dict(
-                partner_id=partner.id,
-                date_planned=fields.Datetime.now(),
-                date_order=fields.Datetime.now()
+            partner_id=partner.id,
+            date_planned=fields.Datetime.now(),
+            date_order=fields.Datetime.now(),
         ))
 
         self.order.write({'state': 'sent'})
