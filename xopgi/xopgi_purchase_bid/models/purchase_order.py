@@ -12,7 +12,7 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoeuf import models, fields, api, MAJOR_ODOO_VERSION
+from xoeuf import models, fields, api
 from xoeuf.models.proxy import PurchaseOrder
 
 
