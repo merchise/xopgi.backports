@@ -12,10 +12,8 @@ from __future__ import (division as _py3_division,
                         absolute_import as _py3_abs_import)
 
 
-from xoeuf import models, fields, api
-from xoeuf.odoo import _
+from xoeuf import models, fields, api, MAJOR_ODOO_VERSION
 from xoeuf.models.proxy import PurchaseOrder
-from xoeuf.odoo.exceptions import Warning as UserError
 
 
 class PurchaseOrder(models.Model):
@@ -52,24 +50,14 @@ class PurchaseOrder(models.Model):
     def accion_bid_received(self):
         return self.write({'state': 'bid', 'bid_date': fields.Datetime.now()})
 
-    # TODO: The method is completely redefined from the odoo because there is
-    # no effective way to redefine it. The only change is the following:
-    #
-    # Odoo:
-    # if order.state not in ['draft', 'sent']:
-    #    continue
     @api.multi
     def button_confirm(self):
+        approve = self.browse()
         for order in self:
-            if order.state not in ['draft', 'sent', 'bid']:
-                raise UserError(
-                    _('Information!'),
-                    _('The purchase order has to be in the Draft, Sent, Bid')
-                )
-            order._add_supplier_to_product()
-            # Deal with double validation process
-            if order.company_id.po_double_validation == 'one_step' or (order.company_id.po_double_validation == 'two_step' and order.amount_total < self.env.user.company_id.currency_id.compute(order.company_id.po_double_validation_amount, order.currency_id)) or order.user_has_groups('purchase.group_purchase_manager'):  # noqa
-                order.button_approve()
-            else:
-                order.write({'state': 'to approve'})
-        return {}
+            if order.state in ['draft', 'sent', 'bid']:
+                approve |= order
+                # Odoo 9+ skips orders that are not in 'draft', or 'sent'.  So
+                # we trick it to process orders in state 'bid'.
+                if order.state == 'bid':
+                    order.state = 'sent'
+        return super(PurchaseOrder, approve).button_confirm()
