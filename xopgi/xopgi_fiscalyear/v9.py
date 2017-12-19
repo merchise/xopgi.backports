@@ -21,10 +21,10 @@ class Company(models.Model):
     def get_fiscal_year(self, ref=None):
         '''Get the fiscal year containing a reference date for the company.
 
-        Return a `xoutil.datetime.TimeSpan`:class: with the fiscal year
+        Return a `xoutil.future.datetime.TimeSpan`:class: with the fiscal year
         containing `ref`.  If `ref` is None, use today.
 
         '''
-        from xoutil.datetime import date, TimeSpan
+        from xoutil.future.datetime import date, TimeSpan
         res = self.compute_fiscalyear_dates(ref or date.today())
         return TimeSpan(res['date_from'], res['date_to'])
