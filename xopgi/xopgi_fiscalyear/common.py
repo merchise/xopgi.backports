@@ -24,7 +24,7 @@ class AccountConfigFiscalYear(models.TransientModel):
     def get_fiscal_year(self, ref=None):
         '''Get the fiscal year containing a reference date.
 
-        Return a `xoutil.datetime.TimeSpan`:class: with the fiscal year
+        Return a `xoutil.future.datetime.TimeSpan`:class: with the fiscal year
         containing `ref`.  If `ref` is None, use today.
 
         Usage::
