@@ -13,9 +13,9 @@
       <field name='name'>xopgi.partner.merge.group.tree</field>
       <field name='model'>xopgi.partner.merge.group</field>
       <field name='arch' type='xml'>
-	<tree>
-	  <field name="name"></field>
-	</tree>
+        <tree>
+          <field name="name"></field>
+        </tree>
       </field>
     </record>
 
@@ -24,33 +24,33 @@
       <field name='name'>xopgi.partner.merge.group.form</field>
       <field name='model'>xopgi.partner.merge.group</field>
       <field name='arch' type='xml'>
-	<form string='Partner group' version="7.0">
-	  <header>
-	    <button
-		name='merge'
-		string='Merge'
-		type='object'
-		class='oe_highlight'
-		/>
-	  </header>
-	  <group>
-	    <field
-		name="dest_partner_id"
-		string="Destination partner"
-		></field>
-	  </group>
-	  <group string="Partners to merge">
-	    <field name="partner_ids">
-	      <tree>
-		<field name="name"></field>
-		<field name="phone"></field>
-		<field name="mobile"></field>
-		<field name="email"></field>
-		<field name="is_company"></field>
-	      </tree>
-	    </field>
-	  </group>
-	</form>
+        <form string='Partner group' version="7.0">
+          <header>
+            <button
+                name='merge'
+                string='Merge'
+                type='object'
+                class='oe_highlight'
+                />
+          </header>
+          <group>
+            <field
+                name="dest_partner_id"
+                string="Destination partner"
+                ></field>
+          </group>
+          <group string="Partners to merge">
+            <field name="partner_ids">
+              <tree>
+                <field name="name"></field>
+                <field name="phone"></field>
+                <field name="mobile"></field>
+                <field name="email"></field>
+                <field name="is_company"></field>
+              </tree>
+            </field>
+          </group>
+        </form>
       </field>
     </record>
   </data>
