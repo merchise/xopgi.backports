@@ -6,8 +6,8 @@
       <field name="model">account.analytic.account</field>
       <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
       <field name="arch" type="xml">
-	<xpath expr="/form//field[@name='currency_id']" position="after">
-	  <field name="parent_id"/>
+        <xpath expr="/form//field[@name='currency_id']" position="after">
+          <field name="parent_id"/>
         </xpath>
       </field>
     </record>

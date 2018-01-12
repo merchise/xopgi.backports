@@ -6,14 +6,14 @@
       <field name="model">account.analytic.account</field>
       <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
       <field name="arch" type="xml">
-	<xpath expr="/form/sheet" position="before">
-	  <header>
-	    <button name="set_pending" string="To Renew" type="object" states="open" />
-	    <button name="set_close" string="Close Contract" type="object" states="open,pending" />
-	    <button name="set_open" string="Set In Progress" type="object" states="pending,close,cancelled,draft" />
-	    <button name="set_cancel" string="Cancel Contract" type="object" states="open,pending"/>
-	    <field name="state" widget="statusbar"/>
-	   </header>
+        <xpath expr="/form/sheet" position="before">
+          <header>
+            <button name="set_pending" string="To Renew" type="object" states="open" />
+            <button name="set_close" string="Close Contract" type="object" states="open,pending" />
+            <button name="set_open" string="Set In Progress" type="object" states="pending,close,cancelled,draft" />
+            <button name="set_cancel" string="Cancel Contract" type="object" states="open,pending"/>
+            <field name="state" widget="statusbar"/>
+           </header>
         </xpath>
       </field>
     </record>
