@@ -2,11 +2,11 @@
 <openerp>
   <data>
     <menuitem id='crm.root_menu'
-	      name='Tools'
-	      parent='sales_team.menu_base_partner'/>
+              name='Tools'
+              parent='sales_team.menu_base_partner'/>
     <menuitem id='crm.partner_merge_automatic_menu'
-	      action='crm.base_partner_merge_automatic_act'
-	      groups='base.group_system'
-	      parent='crm.root_menu'/>
+              action='crm.base_partner_merge_automatic_act'
+              groups='base.group_system'
+              parent='crm.root_menu'/>
   </data>
 </openerp>
