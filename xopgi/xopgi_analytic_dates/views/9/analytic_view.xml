@@ -15,11 +15,10 @@
               by email to renew the contract with the
               customer.
             </p>
-            <field name="date_start"/>
-            <label for="date" string="End Date"/>
-            <div name="duration">
-              <field name="date" class="oe_inline"/>
-            </div>
+            <group>
+              <field name="date_start"/>
+              <field name="date"/>
+            </group>
         </group>
         </xpath>
       </field>
