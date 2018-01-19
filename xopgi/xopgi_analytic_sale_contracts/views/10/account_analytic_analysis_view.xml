@@ -61,5 +61,6 @@
         </p>
       </field>
     </record>
+    <menuitem action="action_account_analytic_overdue_all" id="menu_action_account_analytic_overdue_all" sequence="100" parent="sales_team.menu_sales"/>
   </data>
 </openerp>
