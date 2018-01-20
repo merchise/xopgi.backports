@@ -16,6 +16,6 @@ from xoeuf import models, fields
 
 
 class Product(models.Model):
-    _inherit = 'product.product'
+    _inherit = 'product.template'
 
     product_manager = fields.Many2one('res.users', string="Manager")
