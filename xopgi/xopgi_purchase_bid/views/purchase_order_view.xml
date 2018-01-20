@@ -17,7 +17,6 @@
             <group>
               <field name="incoterm_id"/>
               <field name="bid_date"/>
-              <field name="bid_validity"/>
             </group>
           </page>
         </xpath>
