@@ -25,11 +25,6 @@ class PurchaseOrder(models.Model):
         help="Date on which the bid was received"
     )
 
-    bid_validity = fields.Datetime(
-        string='Bid Valid Until',
-        help="Date on which the bid expire"
-    )
-
     state = fields.Selection([
         ('draft', 'Draft PO'),
         ('sent', 'RFQ Sent'),
