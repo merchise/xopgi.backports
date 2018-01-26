@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<openerp>
+  <data>
+    <record id="product_mrp_bom_line_tree" model="ir.ui.view">
+      <field name="name">xopgi.product.mrp.bom.line.tree</field>
+      <field name="model">mrp.bom</field>
+      <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='bom_line_ids']/tree/field[@name='product_id']" position="after">
+          <field name="type"/>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</openerp>
