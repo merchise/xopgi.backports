@@ -26,7 +26,7 @@
         'security/xopgi_partner_merge.xml',  # noqa
         'security/ir.model.access.csv',  # noqa
         'view/partner_merge_view.xml',  # noqa
-        'view/%d/menu.xml' % MAJOR_ODOO_VERSION,  # noqa
+        'view/menu.xml',  # noqa
         'data/xopgi_partner_merge_cron.xml'  # noqa
     ],
     'application': False,
@@ -35,7 +35,7 @@
     # and upgrade them.
     #
     # For Odoo 9+ we'll have to provide another solution.
-    'installable':  8 <= MAJOR_ODOO_VERSION < 11,   # noqa
+    'installable':  9 < MAJOR_ODOO_VERSION < 11,   # noqa
 
     'auto_install': False,
 }

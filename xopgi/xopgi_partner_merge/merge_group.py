@@ -11,7 +11,7 @@ from __future__ import (division as _py3_division,
                         print_function as _py3_print,
                         absolute_import as _py3_abs_impor)
 
-from xoeuf import api, fields, models, MAJOR_ODOO_VERSION
+from xoeuf import api, fields, models
 from xoeuf.odoo import _
 from xoeuf.odoo.exceptions import Warning as UserError
 from xoeuf.odoo.tools import mute_logger
@@ -51,22 +51,14 @@ class MergePartnerGroup(models.Model):
         'res.partner',
         string='Destination partner'
     )
-    if MAJOR_ODOO_VERSION > 9:
-        partner_ids = fields.Many2many(
-            comodel_name='res.partner',
-            relation='xopgi_partner_merge_group_partners',
-            column1='category_id',
-            column2='partner_id',
-            string='Partners'
-        )
-    else:
-        partner_ids = fields.Many2many(
-            'res.partner',
-            rel='xopgi_partner_merge_group_partners',
-            id1='category_id',
-            id2='partner_id',
-            string='Partners'
-        )
+
+    partner_ids = fields.Many2many(
+        comodel_name='res.partner',
+        relation='xopgi_partner_merge_group_partners',
+        column1='category_id',
+        column2='partner_id',
+        string='Partners'
+    )
 
     name = fields.Char(
         related=('dest_partner_id', 'name'),
