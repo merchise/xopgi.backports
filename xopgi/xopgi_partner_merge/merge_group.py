@@ -51,13 +51,15 @@ class MergePartnerGroup(models.Model):
         'res.partner',
         string='Destination partner'
     )
+
     partner_ids = fields.Many2many(
-        'res.partner',
-        rel='xopgi_partner_merge_group_partners',
-        id1='category_id',
-        id2='partner_id',
+        comodel_name='res.partner',
+        relation='xopgi_partner_merge_group_partners',
+        column1='category_id',
+        column2='partner_id',
         string='Partners'
     )
+
     name = fields.Char(
         related=('dest_partner_id', 'name'),
         string='Name',
