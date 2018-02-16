@@ -11,5 +11,16 @@
         </xpath>
       </field>
     </record>
+
+    <record id="view_account_analytic_line_filter_with_parent" model="ir.ui.view">
+      <field name="name">account.analytic.line.select.with.parent</field>
+      <field name="model">account.analytic.line</field>
+      <field name="inherit_id" ref="analytic.view_account_analytic_line_filter"/>
+      <field name="arch" type="xml">
+        <xpath expr="//group[@name='groupby']" position="inside">
+          <filter string="Parent Analytic Account" context="{'group_by':'parent_account_id'}" name="parent_account_id"/>
+        </xpath>
+      </field>
+    </record>
   </data>
 </openerp>

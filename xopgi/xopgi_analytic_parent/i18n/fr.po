@@ -32,5 +32,13 @@ msgstr "Erreur ! Impossible de créer des comptes analytiques récursifs."
 
 #. module: xopgi_analytic_parent
 #: model:ir.model.fields,field_description:xopgi_analytic_parent.field_account_analytic_account_parent_id
+#: model:ir.model.fields,field_description:xopgi_analytic_parent.field_account_analytic_line_parent_account_id
+#: model:ir.ui.view,arch_db:xopgi_analytic_parent.view_account_analytic_line_filter_with_parent
 msgid "Parent Analytic Account"
 msgstr "Compte analytique parent"
+
+#. module: xopgi_analytic_parent
+#: model:ir.model,name:xopgi_analytic_parent.model_account_analytic_line
+msgid "Analytic Line"
+msgstr "Ligne analytique"
+

@@ -14,7 +14,7 @@ from __future__ import (division as _py3_division,
 
 from xoeuf import models, fields, api
 from xoeuf.models import get_modelname
-from xoeuf.models.proxy import AccountAnalyticAccount
+from xoeuf.models.proxy import AccountAnalyticAccount, AccountAnalyticLine
 
 
 class AnalyticAccount(models.Model):
@@ -38,3 +38,13 @@ class AnalyticAccount(models.Model):
     _constraints = [
         (check_recursion, 'Error! You cannot create recursive analytic accounts.', ['parent_id']),
     ]
+
+
+class AnalyticLine(models.Model):
+    _inherit = get_modelname(AccountAnalyticLine)
+
+    parent_account_id = fields.Many2one(
+        related="account_id.parent_id",
+        store=True,
+        readonly=True
+    )
