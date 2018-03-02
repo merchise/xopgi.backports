@@ -48,7 +48,7 @@ setup(name=project_name,
       zip_safe=False,
       install_requires=[
           'xoeuf>=0.14',
-          'xoutil>=1.8.4,<1.9',
+          'xoutil>=1.8.4,<2.0',
       ],
       extras_require={
           'test': ['hypothesis>=3.24,<3.30'],
