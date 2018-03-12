@@ -31,3 +31,15 @@ class Project(models.Model):
         default='open',
         track_visibility='onchange',
     )
+
+    def set_done(self):
+        return self.write(dict(state='close'))
+
+    def set_cancel(self):
+        return self.write(dict(state='cancelled'))
+
+    def set_pending(self):
+        return self.write(dict(state='pending'))
+
+    def set_open(self):
+        return self.write(dict(state='open'))
